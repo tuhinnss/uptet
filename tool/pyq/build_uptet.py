@@ -1,4 +1,4 @@
-"""adds the UPTET previous papers (2018, 2019, 2021) to the content pack.
+"""Adds the UPTET previous papers (2018, 2019, 2021) to the content pack.
 
 Usage: build_uptet.py <dir with *.pdf and *.q.json> <content_pack.json> [review.txt]
 
@@ -92,7 +92,7 @@ PAPERS += [
         'level': 'primary',
         'sections': ['p_cdp', 'p_hin', 'p_eng', 'p_math', 'p_evs'],
         'what': 'Primary level paper (Classes I–V), with English as Language II. The solved paper prints most '
-                'questions in Hindi only',
+                'questions in Hindi only; their English text is a translation by UPTET Saathi',
     },
     {
         'id': 'uptet-2018-junior-social-studies',
@@ -103,7 +103,8 @@ PAPERS += [
         'level': 'junior',
         'sections': ['j_cdp', 'j_hin', 'j_eng', 'j_sst'],
         'what': 'Junior level paper (Classes VI–VIII), with English as Language II and the Social Studies option. '
-                'The solved paper prints most questions in Hindi only',
+                'The solved paper prints most questions in Hindi only; their English text is a translation by '
+                'UPTET Saathi',
     },
 ]
 
@@ -178,9 +179,20 @@ def joined(*parts):
     return ' '.join(p for p in parts if p) or None
 
 
+def translation_of(mod):
+    """EN from the section's `<section>_en` module: {n: (text, options or None to reuse the Hindi ones, explanation)}."""
+    try:
+        return importlib.import_module(f'{mod.__name__}_en').EN
+    except ModuleNotFoundError:
+        return None
+
+
 def build_section(mod, sources, keys, problems):
-    # Sections the solved paper prints only in Hindi are built like the Hindi language section.
-    lang = 'hi' if getattr(mod, 'HINDI_ONLY', False) else LANG.get(mod.SUBJECT)
+    # Sections the solved paper prints only in Hindi are built like the Hindi language section,
+    # plus our English translation when the section has one.
+    hindi_only = getattr(mod, 'HINDI_ONLY', False)
+    trans = translation_of(mod) if hindi_only else None
+    lang = None if trans else 'hi' if hindi_only else LANG.get(mod.SUBJECT)
     src = sources[mod.SOURCE]
     key_section = 'english' if mod.SUBJECT == 'eng' else 'main'
     topic_of = {n: t for t, ns in mod.TOPICS.items() for n in ns}
@@ -199,18 +211,27 @@ def build_section(mod, sources, keys, problems):
         fix = mod.FIX.get(n, {})
         en, hi = fix.get('en', q['en']), fix.get('hi', q['hi'])
         options = [(o['en'], o['hi']) for o in q['options']]
+        fixed = set()
         for i, letter in enumerate('abcd'):
             if letter in fix.get('options', {}):
                 fe, fh = fix['options'][letter]
                 options[i] = (fe if fe is not None else options[i][0], fh if fh is not None else options[i][1])
+                if fh is not None:
+                    fixed.add(i)
         if 'match' in fix:
             labels = fix.get('match_labels', ['A', 'B', 'C', 'D'])
             options = [(t, t) for t in (', '.join(f'{l}–{v}' for l, v in zip(labels, code.split()))
                                         for code in fix['match'])]
-        if lang == 'hi':
+            fixed = {0, 1, 2, 3}
+        if hindi_only or lang == 'hi':
             if 'hi' not in fix:
                 hi = joined(en, hi)
-            en, options = None, [(None, joined(e, h)) for e, h in options]
+            # A fixed Hindi option replaces the whole printed option, so it is not joined with leftovers.
+            en, options = None, [(None, h if i in fixed else joined(e, h)) for i, (e, h) in enumerate(options)]
+            if trans:
+                assert n in trans, f'{mod.__name__} {n}: no English translation'
+                en, t_options, _ = trans[n]
+                options = [(te if te is not None else h, h) for te, (_, h) in zip(t_options or [None] * 4, options)]
         elif lang == 'en':
             if hi:
                 problems.append(f'{mod.__name__} {n}: Hindi text in an English question: {hi}')
@@ -237,6 +258,8 @@ def build_section(mod, sources, keys, problems):
         answer = fix.get('answer', keys[(key_section, n)])
         assert answer, f'{mod.__name__} {n}: no single answer in the key; add it to SKIP'
         exp_en, exp_hi = mod.EXPLAIN[n]
+        if trans:
+            exp_en = trans[n][2]
         topic = topic_of.get(n)
         assert topic, f'{mod.__name__} {n}: no topic'
 
@@ -343,7 +366,9 @@ def main():
             q_out = {'id': qid, **q,
                      'source': f"{first_paper['exam']}. {mod.PAPER_LABEL}, question {n}. Answer as given in the solved "
                                f"paper's key, still to be checked against the official final key. Explanation written "
-                               f"by UPTET Saathi.",
+                               f"by UPTET Saathi."
+                               + (' The paper prints this question in Hindi only; the English is a translation by '
+                                  'UPTET Saathi.' if getattr(mod, 'HINDI_ONLY', False) and translation_of(mod) else ''),
                      'verification_status': 'pending_review'}
             questions.append(q_out)
             ids.append(qid)
@@ -379,7 +404,7 @@ def main():
     new_papers.sort(key=lambda p: -p['year'])  # newest first; stable within a year
     pack['papers'] = [{k: p[k] for k in order if k in p} for p in new_papers + pack['papers']]
     pack['questions'] += questions
-    pack['content_version'] = '2026.10.28-uptet.2'
+    pack['content_version'] = '2026.10.28-uptet.3'
 
     open(pack_path, 'w', encoding='utf-8', newline='\n').write(dump(pack) + '\n')
     for p in new_papers:

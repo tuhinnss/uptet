@@ -1,4 +1,4 @@
-"""pull English stems/options for Q1-90 out of a CTET booklet
+"""Pull English stems/options for Q1-90 out of a CTET booklet
 (pdftotext -layout output) and pair them with the final answer key.
 
 usage: python -I extract_ctet.py main.txt key.txt SET out.json

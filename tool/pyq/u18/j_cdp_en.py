@@ -1,0 +1,121 @@
+"""English translation of UPTET 2018 Junior, Part I (Q1–30): Child Development and Pedagogy.
+
+The solved paper prints this section in Hindi only; this is our own translation.
+EN: {n: (question, options or None to reuse the Hindi ones, explanation)}.
+"""
+
+EN = {
+    1: ('Who propounded the kindergarten method?',
+        ['Cook', 'Froebel', 'Montessori', 'Dalton'],
+        'The kindergarten method was propounded by the German educationist Friedrich Froebel.'),
+    2: ('The founder of eclectic counselling is–',
+        ['Williamson', 'Thorne', 'Rogers', 'None of these'],
+        'Eclectic counselling was founded by F.C. Thorne. Williamson is linked with directive and Rogers with '
+        'non-directive counselling.'),
+    3: ("The most effective way to correct a student's undesirable behaviour is–",
+        ['to inform the parents', 'to punish the student', 'to ignore the student',
+         'to find the causes of the undesirable behaviour and suggest remedies'],
+        'The most effective way to correct undesirable behaviour is to find its cause and suggest a remedy; punishing '
+        'or ignoring it does not remove the cause.'),
+    4: ('Dyslexia is related to–',
+        ['a problem with writing', 'a problem with reading', 'a problem with mathematical skills',
+         'a speech disorder'],
+        'Dyslexia is a learning disability in reading. A writing problem is dysgraphia and a mathematics problem is '
+        'dyscalculia.'),
+    5: ('Braille and tape recordings can be used as educational provisions for–',
+        ['students with hearing impairment', 'students with visual impairment',
+         'students with orthopaedic impairment', 'physically disabled students'],
+        'Braille and tape recordings are useful learning aids for students with visual impairment.'),
+    6: ('CWSN means–',
+        ['Children with special needs', 'Children with strong needs', 'Children with single needs',
+         'Persons with mild needs'],
+        'CWSN stands for Children With Special Needs.'),
+    7: ('Which of the following is not an element of counselling?',
+        ['Professional growth', 'Interview', 'Trust', 'Communication'],
+        'Interview, trust and communication are elements of counselling. Professional growth is not.'),
+    8: ('Where is the Manovigyanshala (Bureau of Psychology), Uttar Pradesh, located?',
+        ['Agra', 'Lucknow', 'Allahabad', 'Varanasi'],
+        'The Manovigyanshala (Bureau of Psychology), Uttar Pradesh, is in Allahabad (now Prayagraj).'),
+    9: ('As Skinner is linked with rats and Thorndike with cats, Köhler is linked with–',
+        ['monkeys', 'dogs', 'hens', 'apes'],
+        'Skinner experimented on rats, Thorndike on cats and Köhler on apes (chimpanzees).'),
+    10: ('A plateau in learning is–',
+         ['the end of learning', 'arrested growth in learning', 'a defect in learning', 'an obstacle in learning'],
+         'A learning plateau is a stage where progress seems to stop for a while (arrested growth) before it picks up '
+         'again.'),
+    11: ("The author of the book 'The Behavior of Organisms' is–",
+         ['Pavlov', 'Skinner', 'Hull', 'Thorndike'],
+         "'The Behavior of Organisms' (1938) is by B.F. Skinner."),
+    12: ('What is most important in training students in correct behaviour?',
+         ['Reward', 'Praise', 'Punishment', 'Presenting the correct behaviour'],
+         'According to the answer key, the most important thing in teaching correct behaviour is presenting it (showing '
+         'it as a model) so that students can imitate it.'),
+    13: ("Who proposed the concept of the 'goal gradient' in problem solving?",
+         ['Köhler', 'Hull', 'Kendler', 'Brick'],
+         'The goal gradient concept was given by Clark Hull: as an organism nears its goal, its speed and effort '
+         'increase.'),
+    14: ('Which of these is not associated with schools of thought on teaching?',
+         ['D.W. Allen', 'Bush', 'David Hume', 'Acheson'],
+         'D.W. Allen, Bush and Acheson are associated with teaching (micro-teaching). David Hume was a philosopher, not '
+         'linked to a school of thought on teaching.'),
+    15: ('Which of the following is not a level of teaching and learning?',
+         ['Memory level', 'Understanding level', 'Reflective level', 'Distant level'],
+         'The levels of teaching and learning are memory, understanding and reflective. There is no "distant level".'),
+    16: ('Which of the following is not a democratic teaching strategy in classroom teaching?',
+         ['Discovery', 'Lecture', 'Project', 'Brainstorming'],
+         'In a lecture the teacher talks and students listen, so it is not a democratic strategy. In discovery, '
+         'projects and brainstorming students take an active part.'),
+    17: ('Which of the following is not a feature of inclusive education?',
+         ['Inclusive education is a continuous process, not an achieved state or a product',
+          'It improves learning only for students with special needs',
+          'It shifts services for children with disabilities from care towards their education and personal '
+          'development',
+          'It seeks to develop the abilities of all students to the fullest'],
+         'Inclusive education improves the learning of all students, not only of those with special needs. So (b) is '
+         'not one of its features.'),
+    18: ("Which of the following is not part of Flanders' interaction analysis system?",
+         ['Teacher talk', 'Student talk', 'Parent talk', 'Silence'],
+         "Flanders' interaction analysis system has categories for teacher talk, student talk and silence or "
+         'confusion; it has none for parent talk.'),
+    19: ('The smallest unit of meaning in speech is–',
+         ['the phoneme', 'the morpheme', 'the inflected word (pad)', 'the word'],
+         'A morpheme is the smallest unit of meaning; a phoneme is the smallest unit of sound.'),
+    20: ('"We learn by doing." Who said this?',
+         ['Dr. Mace', 'Yoakam', 'Simpson', 'Kolesnik'],
+         'According to the answer key, the statement "We learn by doing" is by Dr. Mace.'),
+    21: ('Which of the following is not a level of teaching?',
+         ['Memory', 'Understanding', 'Reflection', 'Description'],
+         'The levels of teaching are memory, understanding and reflection. "Description" is not a level of teaching.'),
+    22: ('The main operation in the interactive phase of teaching is–',
+         ['action and reaction', 'diagnosis', 'perception', 'all of the above'],
+         'In the interactive phase of teaching there is action and reaction between the teacher and the students.'),
+    23: ('A child starts to fear a black cow, a black dog and other black objects. This kind of conditioning involves–',
+         ['response generalisation', 'response conditioning', 'stimulus generalisation', 'none of the above'],
+         'Learning to fear one black object and then fearing all black objects is stimulus generalisation: the same '
+         'response to similar stimuli.'),
+    24: ('Which of the following need not be kept in mind when choosing a teaching method?',
+         ["The students' mental level", 'Individual differences', "The parents' background",
+          'The particular nature of the subject'],
+         "When choosing a teaching method one looks at the students' mental level, individual differences and the "
+         "nature of the subject, not at the parents' background."),
+    25: ('Which of the following is not a feature of childhood?',
+         ['Stability in growth', 'Strong group feeling', 'Lack of curiosity', 'Taking part in groups and games'],
+         'Curiosity is very strong in childhood, so "lack of curiosity" is not one of its features.'),
+    26: ('Which of the following is not related to the creative process?',
+         ['Preparation', 'Incubation', 'Motivation', 'Illumination'],
+         'The stages of the creative process are preparation, incubation, illumination and verification. Motivation is '
+         'not one of them.'),
+    27: ('Which of the following is the first stage of growth and development?',
+         ['Moral development', 'Physical development', 'Social development', 'Mental development'],
+         'Growth and development begin with physical development; other development comes with and after it.'),
+    28: ('Learning is a kind of behavioural–',
+         ['modification', 'defence', 'extension', 'spread'],
+         'Learning is the modification of behaviour through experience and training.'),
+    29: ('The Skinner box is used for–',
+         ['motor learning', 'verbal learning', 'operant conditioning', 'incidental learning'],
+         'The Skinner box is used to study operant conditioning.'),
+    30: ('The Bhatia battery of intelligence tests has–',
+         ['4 sub-tests', '5 sub-tests', '8 sub-tests', '7 sub-tests'],
+         "The Bhatia battery has 5 sub-tests: Koh's block design, pass-along, pattern drawing, immediate memory and "
+         'picture construction.'),
+}

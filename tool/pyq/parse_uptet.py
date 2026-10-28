@@ -1,4 +1,4 @@
-"""parse the question pages of a UPTET solved-paper PDF.
+"""Parse the question pages of a UPTET solved-paper PDF.
 
 Usage: parse_uptet.py <pdf> <lines.json> <last question page> <out.json>
 

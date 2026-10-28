@@ -1,4 +1,4 @@
-"""example words that the APS converter cannot fully handle."""
+"""Example words that the APS converter cannot fully handle."""
 import collections
 import json
 import re

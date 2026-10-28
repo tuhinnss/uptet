@@ -1,4 +1,4 @@
-"""turn the extracted CTET Feb 2026 Paper I Set S questions
+"""Turn the extracted CTET Feb 2026 Paper I Set S questions
 (Q1-90) into content-pack entries and merge them into content_pack.json.
 
 usage: python -I build_ctet_feb26_p1s.py q1_90.json content_pack.json

@@ -19,12 +19,7 @@ void main() {
 
     // Papers whose source gives only one language; the other is still to be added.
     // CTET: Hindi still to be converted from the booklet's legacy font.
-    // UPTET 2018: the solved paper prints the questions in Hindi only.
-    const translationPendingPapers = {
-      'ctet-feb26-p1-07feb-s',
-      'uptet-2018-primary',
-      'uptet-2018-junior-social-studies',
-    };
+    const translationPendingPapers = {'ctet-feb26-p1-07feb-s'};
 
     test('every question is available in Hindi and English', () {
       final translationPending = {

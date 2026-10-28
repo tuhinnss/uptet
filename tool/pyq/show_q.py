@@ -1,4 +1,4 @@
-"""compact listing of parsed questions with the answer key.
+"""Compact listing of parsed questions with the answer key.
 
 Usage: show_q.py <name> <first> <last> [occurrence] [width]   (run inside the data directory)
 Occurrence 1 selects the second run of 61–90 (Sanskrit).

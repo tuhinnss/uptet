@@ -1,4 +1,4 @@
-"""words in the Hindi font containing given characters, with their conversion.
+"""Words in the Hindi font containing given characters, with their conversion.
 
 Usage: glyph_words.py <chars> <lines.json>...
 """

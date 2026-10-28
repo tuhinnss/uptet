@@ -1,4 +1,4 @@
-"""visible text lines of a PDF as font-tagged segments.
+"""Visible text lines of a PDF as font-tagged segments.
 
 Spans are grouped into visual lines per column (by baseline) and sorted left
 to right, so justified lines that the PDF splits into pieces come back whole.
