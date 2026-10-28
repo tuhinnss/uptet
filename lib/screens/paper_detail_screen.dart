@@ -6,6 +6,7 @@ import '../models/attempt.dart';
 import '../widgets/async_loader.dart';
 import '../widgets/common.dart';
 import 'papers_screen.dart';
+import 'pdf_screen.dart';
 import 'quiz_launcher.dart';
 import 'quiz_screen.dart';
 import 'result_screen.dart';
@@ -60,7 +61,19 @@ class PaperDetailScreen extends StatelessWidget {
                     if (languages.isNotEmpty) _InfoRow(s.languagesLabel, languages.map(s.languageName).join(', ')),
                     _InfoRow(s.markingLabel, s.marking(paper.marking)),
                     _InfoRow(s.sourceLabel, paper.source),
-                    if (paper.pdfAsset == null) _InfoRow('PDF', s.noPdf),
+                    if (paper.pdfAsset case final pdf?) ...[
+                      const SizedBox(height: 8),
+                      OutlinedButton.icon(
+                        icon: const Icon(Icons.picture_as_pdf_outlined),
+                        label: Text(s.viewPdf),
+                        onPressed: () => PdfScreen.open(
+                          context,
+                          title: paper.title.resolve(app.language).text,
+                          asset: pdf,
+                        ),
+                      ),
+                    ] else
+                      _InfoRow('PDF', s.noPdf),
                     if (data.attempts.isNotEmpty) ...[
                       SectionHeader(s.yourAttempts),
                       for (final attempt in data.attempts)

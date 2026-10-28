@@ -404,7 +404,7 @@ def main():
     new_papers.sort(key=lambda p: -p['year'])  # newest first; stable within a year
     pack['papers'] = [{k: p[k] for k in order if k in p} for p in new_papers + pack['papers']]
     pack['questions'] += questions
-    pack['content_version'] = '2026.10.28-uptet.3'
+    pack['content_version'] = '2026.10.28-uptet.4'
 
     open(pack_path, 'w', encoding='utf-8', newline='\n').write(dump(pack) + '\n')
     for p in new_papers:

@@ -263,7 +263,7 @@ paper = {
     "distribution_cleared": False,
     "duration_minutes": 90,
     "marking": {"correct": 1, "incorrect": 0, "unanswered": 0},
-    "pdf_asset": None,
+    "pdf_asset": "assets/pdfs/ctet-feb26-p1-07feb-s.pdf",
     "source": "Central Board of Secondary Education (CBSE): CTET February 2026 Paper I question booklet, Set S "
               "(exam on 7 February 2026), and the CBSE final answer key, published at ctet.nic.in. Parts I–III "
               "(questions 1–90); question 16 is left out because the final key accepts two answers. "

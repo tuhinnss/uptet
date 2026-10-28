@@ -103,6 +103,9 @@ class S {
 
   String get sourceLabel => _t('Source', 'स्रोत');
   String get noPdf => _t('No PDF is included for this paper.', 'इस प्रश्नपत्र के साथ कोई PDF शामिल नहीं है।');
+  String get viewPdf => _t('View the original paper (PDF)', 'मूल प्रश्नपत्र देखें (PDF)');
+  String get pdfFailed => _t('The PDF could not be opened.', 'PDF नहीं खुल सका।');
+  String pageXofY(int x, int y) => _t('Page $x of $y', 'पृष्ठ $x / $y');
   String get startTest => _t('Start test', 'टेस्ट शुरू करें');
   String get startAgain => _t('Start again', 'फिर से शुरू करें');
   String get startAgainTitle => _t('Start again?', 'फिर से शुरू करें?');
