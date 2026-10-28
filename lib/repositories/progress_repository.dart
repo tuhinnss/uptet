@@ -78,11 +78,15 @@ class ProgressRepository {
     required List<Question> questions,
     required MarkingScheme marking,
     required String contentVersion,
+    AttemptMode mode = AttemptMode.practice,
+    Duration? timeLimit,
   }) {
     final now = _clock().millisecondsSinceEpoch;
     return _db.transaction((txn) async {
       final id = await txn.insert('attempts', {
         'kind': kind.name,
+        'mode': mode.name,
+        'time_limit_seconds': timeLimit?.inSeconds,
         'paper_id': paperId,
         'topic_id': topicId,
         'question_ids_json': jsonEncode([for (final q in questions) q.id]),
@@ -122,6 +126,14 @@ class ProgressRepository {
   Future<void> saveCurrentIndex(int attemptId, int index) => _db.update(
         'attempts',
         {'current_index': index, 'updated_at': _clock().millisecondsSinceEpoch},
+        where: 'attempt_id = ? AND status = ?',
+        whereArgs: [attemptId, AttemptStatus.inProgress.code],
+      );
+
+  /// Records the time spent so far; only an unfinished attempt's clock moves.
+  Future<void> saveElapsed(int attemptId, Duration elapsed) => _db.update(
+        'attempts',
+        {'elapsed_seconds': elapsed.inSeconds},
         where: 'attempt_id = ? AND status = ?',
         whereArgs: [attemptId, AttemptStatus.inProgress.code],
       );
@@ -242,6 +254,9 @@ class ProgressRepository {
     return Attempt(
       id: r['attempt_id'] as int,
       kind: AttemptKind.values.byName(r['kind'] as String),
+      mode: AttemptMode.fromCode(r['mode'] as String?),
+      timeLimit: r['time_limit_seconds'] == null ? null : Duration(seconds: r['time_limit_seconds'] as int),
+      elapsed: Duration(seconds: r['elapsed_seconds'] as int? ?? 0),
       paperId: r['paper_id'] as String?,
       topicId: r['topic_id'] as String?,
       questionIds: (jsonDecode(r['question_ids_json'] as String) as List).cast<String>(),

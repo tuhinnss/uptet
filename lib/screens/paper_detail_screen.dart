@@ -67,7 +67,7 @@ class PaperDetailScreen extends StatelessWidget {
                         Card(
                           child: ListTile(
                             title: Text(attemptScore(attempt)),
-                            subtitle: Text(formatDateTime(context, attempt.submittedAt!)),
+                            subtitle: Text(attemptSubtitle(context, attempt)),
                             trailing: const Icon(Icons.chevron_right),
                             onTap: () => ResultScreen.open(context, attempt.id),
                           ),
@@ -87,13 +87,7 @@ class PaperDetailScreen extends StatelessWidget {
                               style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
                               icon: const Icon(Icons.play_arrow),
                               label: Text(s.startTest),
-                              onPressed: () => startQuiz(
-                                context,
-                                kind: AttemptKind.paper,
-                                paperId: paperId,
-                                questions: questions,
-                                marking: paper.marking,
-                              ),
+                              onPressed: () => startPaper(context, paper),
                             )
                           : Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -134,16 +128,7 @@ class PaperDetailScreen extends StatelessWidget {
       ),
     );
     if (confirmed != true || !context.mounted) return;
-    final paper = app.content.paper(paperId)!;
-    await app.progress.discardInProgress(unfinished.id);
-    if (!context.mounted) return;
-    await startQuiz(
-      context,
-      kind: AttemptKind.paper,
-      paperId: paperId,
-      questions: app.content.questionsForPaper(paperId),
-      marking: paper.marking,
-    );
+    await startPaper(context, app.content.paper(paperId)!, replacing: unfinished.id);
   }
 }
 

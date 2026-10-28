@@ -234,4 +234,44 @@ void main() {
     expect(report.topics.single.answered, 6);
     expect(report.attempts, hasLength(3));
   });
+
+  test('a mock test keeps its mode, time limit, clock and negative marking', () async {
+    const settings = TestSettings(mode: AttemptMode.mock, timeLimitMinutes: 60, negativeMark: 0.25);
+    final id = await progress.startAttempt(
+      kind: AttemptKind.paper,
+      paperId: 'p1',
+      questions: content.questionsForPaper('p1'),
+      marking: settings.markingFor(MarkingScheme.oneMarkNoNegative),
+      contentVersion: content.contentVersion,
+      mode: settings.mode,
+      timeLimit: settings.timeLimitFor(150),
+    );
+    await progress.saveAnswer(id, 'q1', 'A');
+    await progress.saveAnswer(id, 'q2', 'B');
+    await progress.saveElapsed(id, const Duration(minutes: 12, seconds: 5));
+
+    // Reopening the database keeps the clock for a resumed test.
+    await db.close();
+    await open();
+    final resumed = (await progress.loadAttempt(id))!;
+    expect(resumed.mode, AttemptMode.mock);
+    expect(resumed.timeLimit, const Duration(minutes: 60));
+    expect(resumed.elapsed, const Duration(minutes: 12, seconds: 5));
+
+    final result = await progress.submitAttempt(id, content);
+    expect(result.score, 0.75);
+    expect(result.maxScore, 2);
+
+    // The clock of a submitted attempt no longer moves.
+    await progress.saveElapsed(id, const Duration(hours: 1));
+    expect((await progress.loadAttempt(id))!.elapsed, const Duration(minutes: 12, seconds: 5));
+  });
+
+  test('practice attempts are untimed and use the paper marking', () async {
+    final id = await startPaper();
+    final attempt = (await progress.loadAttempt(id))!;
+    expect(attempt.mode, AttemptMode.practice);
+    expect(attempt.isTimed, isFalse);
+    expect(attempt.elapsed, Duration.zero);
+  });
 }

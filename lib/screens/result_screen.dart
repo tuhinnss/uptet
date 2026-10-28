@@ -136,6 +136,13 @@ class _Summary extends StatelessWidget {
       children: [
         Text(attemptTitle(context, attempt), style: theme.textTheme.titleMedium),
         Text(s.submittedOn(formatDateTime(context, attempt.submittedAt!)), style: theme.textTheme.bodySmall),
+        if (attempt.mode == AttemptMode.mock) ...[
+          const SizedBox(height: 8),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: InfoChip(icon: Icons.timer_outlined, label: '${s.modeMock} · ${s.marking(attempt.marking)}'),
+          ),
+        ],
         const SizedBox(height: 16),
         Text(s.score, style: theme.textTheme.labelLarge),
         Text(attemptScore(attempt), style: theme.textTheme.displaySmall),
@@ -145,6 +152,14 @@ class _Summary extends StatelessWidget {
           StatTile(label: s.incorrect, value: '$incorrect'),
           StatTile(label: s.notAnswered, value: '${attempt.unansweredCount ?? 0}'),
           StatTile(label: s.accuracy, value: formatPercent(attempt.accuracyPercent)),
+          // Attempts from before the clock was recorded have no time.
+          if (attempt.elapsed > Duration.zero)
+            StatTile(
+              label: s.timeTaken,
+              value: attempt.timeLimit == null
+                  ? formatClock(attempt.elapsed)
+                  : s.ofTimeLimit(formatClock(attempt.elapsed), attempt.timeLimit!.inMinutes),
+            ),
         ]),
         if (justSubmitted && incorrect > 0) ...[
           const SizedBox(height: 16),

@@ -132,6 +132,12 @@ const List<List<String>> migrations = [
     'ALTER TABLE papers ADD COLUMN level TEXT',
     'ALTER TABLE subjects ADD COLUMN language TEXT',
   ],
+  // v4: mock tests
+  [
+    "ALTER TABLE attempts ADD COLUMN mode TEXT NOT NULL DEFAULT 'practice'",
+    'ALTER TABLE attempts ADD COLUMN time_limit_seconds INTEGER',
+    'ALTER TABLE attempts ADD COLUMN elapsed_seconds INTEGER NOT NULL DEFAULT 0',
+  ],
 ];
 
 int get schemaVersion => migrations.length;

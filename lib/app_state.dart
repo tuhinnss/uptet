@@ -21,6 +21,8 @@ class AppController extends ChangeNotifier {
   final ProgressRepository progress;
   final SettingsRepository _settings;
 
+  SettingsRepository get settings => _settings;
+
   /// Set when a new content pack could not be installed and the previous one is in use.
   final String? contentWarning;
 

@@ -111,6 +111,28 @@ class S {
       'आपके अधूरे उत्तर हट जाएँगे। पूरे किए गए टेस्ट के परिणाम सुरक्षित रहेंगे।');
   String get noQuestionsAvailable => _t('No questions are available for this yet.', 'इसके लिए अभी कोई प्रश्न उपलब्ध नहीं है।');
   String get yourAttempts => _t('Your attempts', 'आपके प्रयास');
+
+  // Test settings
+  String get testSettings => _t('Test settings', 'टेस्ट सेटिंग्स');
+  String get modePractice => _t('Practice', 'अभ्यास');
+  String get modeMock => _t('Mock test', 'मॉक टेस्ट');
+  String get practiceModeHint => _t('No timer: take as long as you need.', 'कोई टाइमर नहीं: जितना समय चाहिए, लें।');
+  String get mockModeHint => _t(
+      'Timed like the real exam. The test is submitted automatically when time runs out. The timer pauses while you are away from the test.',
+      'असली परीक्षा की तरह समयबद्ध। समय समाप्त होने पर टेस्ट अपने आप जमा हो जाता है। टेस्ट से बाहर रहने पर टाइमर रुका रहता है।');
+  String get timeLimit => _t('Time limit', 'समय सीमा');
+  String fullTime(int minutes) => _t('Full time · $minutes min', 'पूरा समय · $minutes मिनट');
+  String get negativeMarking => _t('Negative marking', 'ऋणात्मक अंकन');
+  String get noNegativeMarking => _t('None', 'नहीं');
+  String perWrongAnswer(double mark) =>
+      _t('−${formatNumber(mark)} per wrong answer', 'हर गलत उत्तर पर −${formatNumber(mark)}');
+  String get shuffleQuestions => _t('Shuffle question order', 'प्रश्नों का क्रम बदलें');
+  String get timeLeft => _t('Time left', 'शेष समय');
+  String get timeUp => _t('Time is up. Your test has been submitted.', 'समय समाप्त। आपका टेस्ट जमा कर दिया गया है।');
+  String get timeTaken => _t('Time taken', 'लगा समय');
+  String ofTimeLimit(String taken, int minutes) => _t('$taken of $minutes min', '$minutes मिनट में से $taken');
+  String get mockLeaveBody => _t('Your answers are saved and the timer is paused. You can continue later from Home.',
+      'आपके उत्तर सहेजे गए हैं और टाइमर रुका है। आप बाद में होम से जारी रख सकते हैं।');
   String get couldNotStart => _t('The test could not be started. Please try again.', 'टेस्ट शुरू नहीं हो सका। कृपया फिर से प्रयास करें।');
 
   // Quiz

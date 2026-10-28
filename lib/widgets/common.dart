@@ -197,3 +197,16 @@ String attemptTitle(BuildContext context, Attempt attempt) {
 
 String attemptScore(Attempt attempt) =>
     '${formatNumber(attempt.score ?? 0)} / ${formatNumber(attempt.maxScore ?? 0)}';
+
+/// Submission time, marked when the attempt was a mock test.
+String attemptSubtitle(BuildContext context, Attempt attempt) {
+  final when = formatDateTime(context, attempt.submittedAt!);
+  return attempt.mode == AttemptMode.mock ? '${S.of(context).modeMock} · $when' : when;
+}
+
+/// `12:05`, or `1:02:05` from an hour up.
+String formatClock(Duration d) {
+  String two(int n) => n.toString().padLeft(2, '0');
+  final minutes = d.inMinutes.remainder(60), seconds = d.inSeconds.remainder(60);
+  return d.inHours > 0 ? '${d.inHours}:${two(minutes)}:${two(seconds)}' : '${two(d.inMinutes)}:${two(seconds)}';
+}

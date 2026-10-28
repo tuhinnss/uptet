@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../app_state.dart';
 import '../l10n/strings.dart';
 import '../models/attempt.dart';
 import '../models/content.dart';
+import '../repositories/progress_repository.dart';
 import '../widgets/common.dart';
 import '../widgets/question_view.dart';
 import '../widgets/settings_sheet.dart';
@@ -11,7 +14,10 @@ import 'result_screen.dart';
 
 /// Answers a paper or topic attempt. Every choice is saved as it is made, so
 /// leaving the screen never loses work; only an explicit, confirmed submit
-/// ends the attempt.
+/// ends the attempt, or the clock running out in a mock test.
+///
+/// The clock only runs while this screen is open and the app is in the
+/// foreground, so a phone call or leaving the test does not use up time.
 class QuizScreen extends StatefulWidget {
   const QuizScreen({super.key, required this.attemptId});
 
@@ -25,7 +31,9 @@ class QuizScreen extends StatefulWidget {
   State<QuizScreen> createState() => _QuizScreenState();
 }
 
-class _QuizScreenState extends State<QuizScreen> {
+class _QuizScreenState extends State<QuizScreen> with WidgetsBindingObserver {
+  static const _saveClockEvery = Duration(seconds: 15);
+
   Attempt? _attempt;
   List<Question> _questions = const [];
   final Map<String, String?> _selected = {};
@@ -34,12 +42,89 @@ class _QuizScreenState extends State<QuizScreen> {
   bool _failed = false;
   bool _submitting = false;
 
+  // Kept for dispose, when the context can no longer be used.
+  ProgressRepository? _progress;
+  Duration _elapsedBefore = Duration.zero;
+  final Stopwatch _clock = Stopwatch();
+  Timer? _ticker;
+  Duration _lastSaved = Duration.zero;
+
+  Duration get _elapsed {
+    final elapsed = _elapsedBefore + _clock.elapsed;
+    final limit = _attempt?.timeLimit;
+    return limit != null && elapsed > limit ? limit : elapsed;
+  }
+
+  Duration? get _remaining {
+    final limit = _attempt?.timeLimit;
+    return limit == null ? null : limit - _elapsed;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_started) {
       _started = true;
+      _progress = AppScope.read(context).progress;
       _load();
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _pauseClock();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _resumeClock();
+    } else {
+      _pauseClock();
+    }
+  }
+
+  void _resumeClock() {
+    if (_attempt == null || _submitting || _clock.isRunning) return;
+    _clock.start();
+    _ticker = Timer.periodic(const Duration(seconds: 1), (_) => _tick());
+  }
+
+  void _pauseClock() {
+    if (!_clock.isRunning) return;
+    _clock.stop();
+    _ticker?.cancel();
+    _ticker = null;
+    _saveClock();
+  }
+
+  void _tick() {
+    if (!mounted) return;
+    final remaining = _remaining;
+    if (remaining != null && remaining <= Duration.zero) {
+      _timeUp();
+      return;
+    }
+    if (_attempt!.isTimed) setState(() {});
+    if (_elapsed - _lastSaved >= _saveClockEvery) _saveClock();
+  }
+
+  Future<void> _saveClock() async {
+    final elapsed = _elapsed;
+    _lastSaved = elapsed;
+    try {
+      await _progress?.saveElapsed(widget.attemptId, elapsed);
+    } catch (e) {
+      // At most the last few seconds are lost; the clock carries on.
+      debugPrint('Could not save time: $e');
     }
   }
 
@@ -63,7 +148,14 @@ class _QuizScreenState extends State<QuizScreen> {
         _questions = questions;
         _selected.addAll({for (final a in attempt.answers.values) a.questionId: a.selectedOptionId});
         _index = attempt.currentIndex.clamp(0, questions.length - 1);
+        _elapsedBefore = _lastSaved = attempt.elapsed;
       });
+      // A mock test whose time ran out before it could be submitted is submitted now.
+      if (_remaining case final remaining? when remaining <= Duration.zero) {
+        _timeUp();
+      } else {
+        _resumeClock();
+      }
     } catch (e) {
       debugPrint('Could not open attempt: $e');
       if (mounted) setState(() => _failed = true);
@@ -108,7 +200,7 @@ class _QuizScreenState extends State<QuizScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(s.leaveTitle),
-        content: Text(s.leaveBody),
+        content: Text(_attempt!.isTimed ? s.mockLeaveBody : s.leaveBody),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context, true), child: Text(s.leave)),
           FilledButton(onPressed: () => Navigator.pop(context, false), child: Text(s.stay)),
@@ -136,14 +228,35 @@ class _QuizScreenState extends State<QuizScreen> {
       ),
     );
     if (confirmed != true || !mounted) return;
+    await _submit(app, s);
+  }
 
+  /// Ends a mock test when its time runs out. The answers given so far count.
+  Future<void> _timeUp() async {
+    if (_submitting || !mounted) return;
+    final app = AppScope.read(context);
+    final s = S.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    // Close any open dialog or sheet so the result replaces this screen, not them.
+    final route = ModalRoute.of(context);
+    Navigator.of(context).popUntil((r) => r == route);
+    if (await _submit(app, s)) messenger.showSnackBar(SnackBar(content: Text(s.timeUp)));
+  }
+
+  Future<bool> _submit(AppController app, S s) async {
+    if (_submitting) return false;
     setState(() => _submitting = true);
+    _clock.stop();
+    _ticker?.cancel();
+    _ticker = null;
     try {
+      await app.progress.saveElapsed(widget.attemptId, _elapsed);
       await app.progress.submitAttempt(widget.attemptId, app.content);
     } catch (e) {
       debugPrint('Could not submit attempt: $e');
-      if (!mounted) return;
+      if (!mounted) return false;
       setState(() => _submitting = false);
+      _resumeClock();
       await showDialog<void>(
         context: context,
         builder: (context) => AlertDialog(
@@ -151,10 +264,11 @@ class _QuizScreenState extends State<QuizScreen> {
           actions: [FilledButton(onPressed: () => Navigator.pop(context), child: Text(s.ok))],
         ),
       );
-      return;
+      return false;
     }
     app.progressChanged();
     if (mounted) ResultScreen.replace(context, widget.attemptId, justSubmitted: true);
+    return true;
   }
 
   void _showQuestionGrid() {
@@ -237,6 +351,7 @@ class _QuizScreenState extends State<QuizScreen> {
         appBar: AppBar(
           title: Text(attemptTitle(context, attempt), maxLines: 1, overflow: TextOverflow.ellipsis),
           actions: [
+            if (_remaining case final remaining?) _CountdownChip(remaining: remaining, label: s.timeLeft),
             const LanguageButton(),
             IconButton(tooltip: s.allQuestions, icon: const Icon(Icons.grid_view), onPressed: _showQuestionGrid),
           ],
@@ -287,6 +402,44 @@ class _QuizScreenState extends State<QuizScreen> {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CountdownChip extends StatelessWidget {
+  const _CountdownChip({required this.remaining, required this.label});
+
+  static const _warnBelow = Duration(minutes: 5);
+
+  final Duration remaining;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final warn = remaining < _warnBelow;
+    final color = warn ? scheme.onErrorContainer : scheme.onSecondaryContainer;
+    return Semantics(
+      label: label,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        decoration: BoxDecoration(
+          color: warn ? scheme.errorContainer : scheme.secondaryContainer,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.timer_outlined, size: 16, color: color),
+            const SizedBox(width: 4),
+            Text(
+              formatClock(remaining.isNegative ? Duration.zero : remaining),
+              style: TextStyle(color: color, fontWeight: FontWeight.bold, fontFeatures: const [FontFeature.tabularFigures()]),
+            ),
+          ],
         ),
       ),
     );

@@ -1,10 +1,36 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 import '../app_state.dart';
 import '../l10n/strings.dart';
 import '../models/attempt.dart';
 import '../models/content.dart';
+import '../widgets/test_settings_sheet.dart';
 import 'quiz_screen.dart';
+
+/// Asks for practice or mock test settings, then starts the paper. The
+/// unfinished attempt [replacing] is discarded only once settings are chosen,
+/// so dismissing the sheet keeps it.
+Future<void> startPaper(BuildContext context, Paper paper, {int? replacing}) async {
+  final app = AppScope.read(context);
+  final questions = app.content.questionsForPaper(paper.id);
+  // Papers without a stated duration get a minute per question.
+  final fullMinutes = paper.durationMinutes ?? questions.length;
+  final settings = await showTestSettingsSheet(context, fullMinutes: fullMinutes);
+  if (settings == null || !context.mounted) return;
+  if (replacing != null) await app.progress.discardInProgress(replacing);
+  if (!context.mounted) return;
+  await startQuiz(
+    context,
+    kind: AttemptKind.paper,
+    paperId: paper.id,
+    questions: settings.shuffle ? ([...questions]..shuffle(Random())) : questions,
+    marking: settings.markingFor(paper.marking),
+    mode: settings.mode,
+    timeLimit: settings.timeLimitFor(fullMinutes),
+  );
+}
 
 /// Creates a new attempt and opens it.
 Future<void> startQuiz(
@@ -14,6 +40,8 @@ Future<void> startQuiz(
   String? topicId,
   required List<Question> questions,
   required MarkingScheme marking,
+  AttemptMode mode = AttemptMode.practice,
+  Duration? timeLimit,
 }) async {
   final app = AppScope.read(context);
   final s = S.of(context);
@@ -27,6 +55,8 @@ Future<void> startQuiz(
       questions: questions,
       marking: marking,
       contentVersion: app.content.contentVersion,
+      mode: mode,
+      timeLimit: timeLimit,
     );
   } catch (e) {
     debugPrint('Could not start attempt: $e');

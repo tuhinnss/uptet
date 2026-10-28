@@ -87,7 +87,7 @@ class _Report extends StatelessWidget {
           Card(
             child: ListTile(
               title: Text(attemptTitle(context, attempt)),
-              subtitle: Text(formatDateTime(context, attempt.submittedAt!)),
+              subtitle: Text(attemptSubtitle(context, attempt)),
               trailing: Text(attemptScore(attempt), style: theme.textTheme.titleSmall),
               onTap: () => ResultScreen.open(context, attempt.id),
             ),
