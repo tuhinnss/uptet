@@ -1,0 +1,35 @@
+# Previous-paper import scripts
+
+Python scripts that turned the source PDFs into content-pack entries. The PDFs and
+intermediate files are not committed (copyright); keep them in `tool/pyq/data/`,
+which is git-ignored.
+
+```
+python -m venv .venv && .venv/Scripts/pip install -r tool/pyq/requirements.txt
+```
+
+Run every script with `python -I` and pass paths as arguments.
+
+## UPTET 2018, 2019, 2021 (YCT solved papers)
+
+The Hindi text uses the APS-DV-Priyanka legacy font; `aps2uni.py` converts it to Unicode.
+
+1. `extract_lines.py <pdf> <name>.lines.json`: font-tagged text lines.
+2. `parse_uptet.py <pdf> <name>.lines.json <last question page> <name>.q.json`: questions and options.
+3. `show_q.py <name> <first> <last>` (inside the data directory): review parsed questions next to the book's key.
+4. `build_uptet.py <data dir> assets/content/content_pack.json [review.txt]`: builds the papers and merges
+   them into the pack, replacing what an earlier run added.
+
+PDF names expected in the data directory: `primary`, `junior_ss`, `junior_ms` (2019),
+`primary18`, `junior_ss18`, `primary21`, `junior_ss21`.
+
+Each section of a paper is a module in `u18/`, `u19/` or `u21/` (`p_` Primary, `j_` Junior) with:
+`TOPICS`, `SKIP` (questions left out, with the reason), `PASSAGES`, `REPLACE` (text fixes),
+`FIX` (whole-field overrides) and `EXPLAIN` (our own explanations, `(en, hi)`).
+
+`aps_contexts.py` and `glyph_words.py` help find words the converter gets wrong.
+
+## CTET Feb 2026 Paper I, Set S
+
+`extract_ctet.py` reads `pdftotext -layout` output of the booklet and the final key;
+`build_ctet_feb26_p1s.py` merges the result into the pack.
