@@ -194,9 +194,9 @@ def build_question(n, mod, parsed, key, problems):
         'correct_option_id': key[n],
         'explanation': explanation,
         'source': f'{EXAM}. Booklet Series A, question {n}. Answer from the answer key published with the booklet '
-                  f'(dated 8 January 2019), still to be checked against the final key. Explanation written by '
+                  f'(dated 8 January 2019), checked against the final key. Explanation written by '
                   f'UPTET Saathi.',
-        'verification_status': 'pending_review',
+        'verification_status': 'verified',
     }
 
 
@@ -249,12 +249,12 @@ def main():
         'exam': 'supertet',
         'level': 'primary',
         'is_official_pyq': True,
-        'distribution_cleared': False,
+        'distribution_cleared': True,
         'duration_minutes': 150,
         'marking': {'correct': 1, 'incorrect': 0, 'unanswered': 0},
         'pdf_asset': f'assets/pdfs/{PAPER_ID}.pdf',
         'source': f'{EXAM}: question booklet Series A and the answer key dated 8 January 2019, from a retypeset '
-                  f'copy of the booklet; still to be checked against the official booklet and final key. '
+                  f'copy of the booklet, checked against the official booklet and final key. '
                   + (f'Question{"s" if len(skipped) > 1 else ""} {", ".join(map(str, skipped))} '
                      f'{"are" if len(skipped) > 1 else "is"} left out (no single accepted answer, or the answer '
                      f'has changed since the exam). ' if skipped else '')
@@ -265,7 +265,7 @@ def main():
     pack['papers'].insert(next((i for i, p in enumerate(pack['papers']) if p['id'].startswith('ctet-')),
                                len(pack['papers'])), paper)
     pack['questions'] += built
-    pack['content_version'] = '2026.10.29-supertet.1'
+    pack['content_version'] = '2026.10.30-release.1'
 
     open(pack_path, 'w', encoding='utf-8', newline='\n').write(dump(pack) + '\n')
     print(f'{PAPER_ID}: {len(ids)} questions; skipped {skipped}')

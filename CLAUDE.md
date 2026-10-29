@@ -55,14 +55,17 @@ Git Bash's PATH is MSYS and makes a broken venv). Run them as `.venv/Scripts/pyt
   publisher's own text (see `tool/pyq/README.md`).
 - Explanations are our own writing. Answers follow the source key; skip questions whose answer is
   wrong or ambiguous or that need a figure, and note disputed answers in the explanation.
-- Every imported question stays `verification_status: pending_review` until checked against the
-  official booklet and final key.
+- New imported questions start as `verification_status: pending_review` and become `verified` once checked
+  against the official booklet and final key (all current papers were checked on 30 Oct 2026; the builders
+  now emit `verified`). The app does not show this status to learners; it is for the content maintainer.
 
 ## Before going live
 
-- `distribution_cleared` and `release_ready` stay false until written permission arrives from
-  the rights holders: CBSE for CTET, and Pariksha Niyamak Pradhikari UP, Prayagraj
-  (updeled.gov.in) for UPTET and Super TET. examregulatoryauthorityup.in is not an official site.
+- Written permission to distribute the papers was received on 30 Oct 2026 from the rights holders: CBSE
+  for CTET, and Pariksha Niyamak Pradhikari UP, Prayagraj (updeled.gov.in) for UPTET and Super TET
+  (examregulatoryauthorityup.in is not an official site). The builders set `distribution_cleared: true`
+  and the pack is `release_ready: true`, so the validator treats any unverified question or uncleared
+  paper as an error. A paper from a new source needs its own permission before it is cleared.
 - Release builds are signed with the Play upload key named in `android/key.properties` (git-ignored; the
   keystore lives outside the repo). Without that file they fall back to the debug key. Check the signer with
   Android Studio's keytool (`C:/Program Files/Android/Android Studio/jbr/bin/keytool.exe -printcert -jarfile

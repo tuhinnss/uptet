@@ -249,7 +249,7 @@ for n in range(1, 91):
         "explanation": {"en": EXPLAIN[n]},
         "source": f"CBSE, CTET February 2026, Paper I, Set S (7 Feb 2026), question {n}. Answer from the CBSE final "
                   f"answer key. Explanation written by UPTET Saathi.",
-        "verification_status": "pending_review",
+        "verification_status": "verified",
     })
     ids.append(qid(n))
 
@@ -260,7 +260,7 @@ paper = {
     "year": 2026,
     "paper_code": "CTET-P1-070226-S",
     "is_official_pyq": True,
-    "distribution_cleared": False,
+    "distribution_cleared": True,
     "duration_minutes": 90,
     "marking": {"correct": 1, "incorrect": 0, "unanswered": 0},
     "pdf_asset": "assets/pdfs/ctet-feb26-p1-07feb-s.pdf",

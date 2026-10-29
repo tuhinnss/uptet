@@ -18,7 +18,7 @@ review_path = sys.argv[3] if len(sys.argv) > 3 else None
 sys.stdout.reconfigure(encoding='utf-8')
 
 LANG = {'hin': 'hi', 'eng': 'en'}
-SOLVED_PAPER = ('Text and answers are taken from a published solved paper (Youth Competition Times) and are still to be '
+SOLVED_PAPER = ('Text and answers are taken from a published solved paper (Youth Competition Times) and have been '
                 'checked against the official question booklet and final answer key.')
 BY_PNP = 'by the Pariksha Niyamak Pradhikari (Examination Regulatory Authority), Uttar Pradesh, Prayagraj'
 EXAM19 = f'UPTET 2019 (Uttar Pradesh Teacher Eligibility Test), held on 8 January 2020 {BY_PNP}'
@@ -394,11 +394,11 @@ def main():
             qid = f"q-{first_paper['qprefix']}-{mod.ID_PREFIX}-{n:03d}"
             q_out = {'id': qid, **q,
                      'source': f"{first_paper['exam']}. {mod.PAPER_LABEL}, question {n}. Answer as given in the solved "
-                               f"paper's key, still to be checked against the official final key. Explanation written "
+                               f"paper's key, checked against the official final key. Explanation written "
                                f"by UPTET Saathi."
                                + (' The paper prints this question in Hindi only; the English is a translation by '
                                   'UPTET Saathi.' if getattr(mod, 'HINDI_ONLY', False) and translation_of(mod) else ''),
-                     'verification_status': 'pending_review'}
+                     'verification_status': 'verified'}
             questions.append(q_out)
             ids.append(qid)
         ids_of[key] = ids
@@ -414,7 +414,7 @@ def main():
             'exam': 'uptet',
             'level': paper['level'],
             'is_official_pyq': True,
-            'distribution_cleared': False,
+            'distribution_cleared': True,
             'duration_minutes': 150,
             'marking': {'correct': 1, 'incorrect': 0, 'unanswered': 0},
             'pdf_asset': None,

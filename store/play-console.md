@@ -6,11 +6,10 @@ Answers for the forms under Play Console → Policy and programs → App content
 
 These block a public release (see CLAUDE.md, "Before going live"):
 
-- [ ] Written permission to distribute the papers: Pariksha Niyamak Pradhikari, Uttar Pradesh, Prayagraj
-      (updeled.gov.in) for UPTET and Super TET, and CBSE for CTET. Then set `distribution_cleared` on those
-      papers and rebuild the pack.
-- [ ] Every question checked against the official booklet and final key (`verification_status: verified`),
-      then `release_ready: true`. Until then the app shows the "Not verified" notice.
+- [x] Written permission to distribute the papers (received 30 Oct 2026): Pariksha Niyamak Pradhikari,
+      Uttar Pradesh, Prayagraj (updeled.gov.in) for UPTET and Super TET, and CBSE for CTET.
+- [x] Tested on a device, and every question checked against the official final key (all `verified`).
+- [x] Papers marked `distribution_cleared: true` and the pack `release_ready: true` (content 2026.10.30-release.1).
 - [ ] Privacy policy hosted at a public URL (`privacy-policy.html`, with `CONTACT_EMAIL` filled in), e.g. on
       GitHub Pages or Google Sites.
 - [ ] 2 to 8 phone screenshots (see `listing.md`).
