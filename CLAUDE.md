@@ -64,7 +64,14 @@ Git Bash's PATH is MSYS and makes a broken venv). Run them as `.venv/Scripts/pyt
   the rights holders: CBSE for CTET, and Pariksha Niyamak Pradhikari UP, Prayagraj
   (updeled.gov.in) for UPTET and Super TET. examregulatoryauthorityup.in is not an official site.
 - Release builds are signed with the Play upload key named in `android/key.properties` (git-ignored; the
-  keystore lives outside the repo). Without that file they fall back to the debug key.
+  keystore lives outside the repo). Without that file they fall back to the debug key. Check the signer with
+  Android Studio's keytool (`C:/Program Files/Android/Android Studio/jbr/bin/keytool.exe -printcert -jarfile
+  <aab>`); the JDK 23 on PATH has no keytool.
+- `store/` holds the Play material: `listing.md` (English and Hindi text), `play-console.md` (App content
+  answers, release checklist), `privacy-policy.html` (to host publicly), icon and feature graphic. Keep the
+  listing in step with the app's features, and keep the "not affiliated" disclaimer in both the listing and
+  the About screen (Play policy for apps with government information).
+- Raise the build number in `pubspec.yaml` for every upload to Play.
 
 ## Conventions
 
