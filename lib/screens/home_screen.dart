@@ -105,10 +105,6 @@ class HomeScreen extends StatelessWidget {
                           subtitle: s.shareAppSubtitle,
                           onTap: () => shareApp(context),
                         ),
-                        if (!app.content.releaseReady) ...[
-                          const SizedBox(height: 4),
-                          NoticeBanner(icon: Icons.info_outline, text: s.unverifiedNotice),
-                        ],
                       ],
                     ),
                   ),

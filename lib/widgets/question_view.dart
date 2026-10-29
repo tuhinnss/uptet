@@ -46,17 +46,7 @@ class QuestionView extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (!inlineHeading || question.verificationStatus != VerificationStatus.verified)
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              if (!inlineHeading) Text(heading, style: theme.textTheme.labelLarge?.copyWith(color: theme.colorScheme.primary)),
-              if (question.verificationStatus != VerificationStatus.verified)
-                InfoChip(icon: Icons.pending_outlined, label: s.notVerified),
-            ],
-          ),
+        if (!inlineHeading) Text(heading, style: theme.textTheme.labelLarge?.copyWith(color: theme.colorScheme.primary)),
         if (missingTranslation) ...[
           const SizedBox(height: 8),
           NoticeBanner(icon: Icons.translate, text: s.translationMissing),

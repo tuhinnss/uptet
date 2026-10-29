@@ -41,7 +41,7 @@ MADE FOR BUSY TEACHERS
 • Your answers and progress stay on your phone
 
 Please note
-UPTET Saathi is an independent study app. It is not affiliated with, endorsed by or acting for the Pariksha Niyamak Pradhikari, Uttar Pradesh, the Central Board of Secondary Education (CBSE) or any government body. The previous papers come from past UPTET, Super TET and CTET exams; the explanations are written by the UPTET Saathi team. Answers are being checked against the official final keys; questions still under review are marked "Not verified". For official notices, syllabus and results, visit updeled.gov.in (UPTET, Super TET) and ctet.nic.in (CTET).
+UPTET Saathi is an independent study app. It is not affiliated with, endorsed by or acting for the Pariksha Niyamak Pradhikari, Uttar Pradesh, the Central Board of Secondary Education (CBSE) or any government body. The previous papers come from past UPTET, Super TET and CTET exams; the explanations are written by the UPTET Saathi team. Answers follow the published answer keys; if you spot a mistake, please let us know. For official notices, syllabus and results, visit updeled.gov.in (UPTET, Super TET) and ctet.nic.in (CTET).
 
 ## Hindi (hi-IN)
 
@@ -81,7 +81,7 @@ UPTET साथी से UPTET, UP Super TET और CTET की तैयार
 • आपके उत्तर और प्रगति आपके फ़ोन में ही रहते हैं
 
 ध्यान दें
-UPTET साथी एक स्वतंत्र अध्ययन ऐप है। इसका परीक्षा नियामक प्राधिकारी, उत्तर प्रदेश, केन्द्रीय माध्यमिक शिक्षा बोर्ड (CBSE) या किसी भी सरकारी संस्था से कोई संबंध नहीं है, न ही यह उनकी ओर से काम करता है या उनके द्वारा अनुमोदित है। पिछले प्रश्नपत्र UPTET, Super TET और CTET की पुरानी परीक्षाओं से लिए गए हैं; व्याख्याएँ UPTET साथी टीम ने लिखी हैं। उत्तरों का आधिकारिक अंतिम उत्तरमाला से मिलान किया जा रहा है; जिन प्रश्नों की जाँच बाकी है उन पर "असत्यापित" लिखा है। आधिकारिक सूचना, पाठ्यक्रम और परिणाम के लिए updeled.gov.in (UPTET, Super TET) और ctet.nic.in (CTET) देखें।
+UPTET साथी एक स्वतंत्र अध्ययन ऐप है। इसका परीक्षा नियामक प्राधिकारी, उत्तर प्रदेश, केन्द्रीय माध्यमिक शिक्षा बोर्ड (CBSE) या किसी भी सरकारी संस्था से कोई संबंध नहीं है, न ही यह उनकी ओर से काम करता है या उनके द्वारा अनुमोदित है। पिछले प्रश्नपत्र UPTET, Super TET और CTET की पुरानी परीक्षाओं से लिए गए हैं; व्याख्याएँ UPTET साथी टीम ने लिखी हैं। उत्तर प्रकाशित उत्तरमाला के अनुसार हैं; कोई गलती दिखे तो हमें बताएँ। आधिकारिक सूचना, पाठ्यक्रम और परिणाम के लिए updeled.gov.in (UPTET, Super TET) और ctet.nic.in (CTET) देखें।
 
 ## Graphics
 

@@ -48,11 +48,8 @@ class S {
       _t('Something went wrong while loading. Please try again.', 'लोड करते समय समस्या हुई। कृपया फिर से प्रयास करें।');
   String questionsCount(int n) => _t(n == 1 ? '1 question' : '$n questions', '$n प्रश्न');
   String questionXofY(int x, int y) => _t('Question $x of $y', 'प्रश्न $x / $y');
-  String get notVerified => _t('Not verified', 'असत्यापित');
   String get translationMissing => _t('English version not available — showing Hindi.',
       'हिन्दी संस्करण उपलब्ध नहीं — अंग्रेज़ी में दिखाया जा रहा है।');
-  String get unverifiedNotice => _t('Questions marked "Not verified" are still being checked against the official answer keys.',
-      '"असत्यापित" चिह्नित प्रश्नों का आधिकारिक उत्तरमाला से मिलान अभी बाकी है।');
   String get contentUpdateFailed => _t(
       'New study content could not be installed, so the previous content is being used.',
       'नई अध्ययन सामग्री इंस्टॉल नहीं हो सकी, इसलिए पिछली सामग्री का उपयोग हो रहा है।');

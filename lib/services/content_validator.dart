@@ -114,7 +114,7 @@ List<ContentIssue> validateContentPack(ContentPack pack, {bool Function(String p
 
   if (!pack.releaseReady) {
     warn('Pack ${pack.contentVersion} is not marked release_ready; '
-        'the app will show a "not verified" notice');
+        'set it once every paper has permission to be distributed');
   }
   return issues;
 }
