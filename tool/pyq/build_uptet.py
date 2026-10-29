@@ -1,4 +1,4 @@
-"""Adds the UPTET previous papers (2018, 2019, 2021) to the content pack.
+"""Adds the UPTET previous papers (2017, 2018, 2019, 2021) to the content pack.
 
 Usage: build_uptet.py <dir with *.pdf and *.q.json> <content_pack.json> [review.txt]
 
@@ -23,6 +23,7 @@ SOLVED_PAPER = ('Text and answers are taken from a published solved paper (Youth
 BY_PNP = 'by the Pariksha Niyamak Pradhikari (Examination Regulatory Authority), Uttar Pradesh, Prayagraj'
 EXAM19 = f'UPTET 2019 (Uttar Pradesh Teacher Eligibility Test), held on 8 January 2020 {BY_PNP}'
 EXAM18 = f'UPTET 2018 (Uttar Pradesh Teacher Eligibility Test), held on 18 November 2018 {BY_PNP}'
+EXAM17 = f'UPTET 2017 (Uttar Pradesh Teacher Eligibility Test), held on 15 October 2017 {BY_PNP}'
 EXAM21P = (f'UPTET 2021 (Uttar Pradesh Teacher Eligibility Test), exam of 28 November 2021 {BY_PNP}; this sitting '
            f'was cancelled after the paper leaked, and the exam was held again on 23 January 2022 with a new paper')
 EXAM21 = f'UPTET 2021 (Uttar Pradesh Teacher Eligibility Test), held on 23 January 2022 {BY_PNP}'
@@ -100,6 +101,32 @@ PAPERS += [
         'title': {'en': 'UPTET 2018 · Junior level (Classes VI–VIII) · Social Studies',
                   'hi': 'UPTET 2018 · उच्च प्राथमिक स्तर (कक्षा 6–8) · सामाजिक अध्ययन'},
         'paper_code': 'UPTET-2018-P2-SST',
+        'level': 'junior',
+        'sections': ['j_cdp', 'j_hin', 'j_eng', 'j_sst'],
+        'what': 'Junior level paper (Classes VI–VIII), with English as Language II and the Social Studies option. '
+                'The solved paper prints most questions in Hindi only; their English text is a translation by '
+                'UPTET Saathi',
+    },
+]
+
+PAPERS += [
+    {
+        'id': 'uptet-2017-primary',
+        'pkg': 'u17', 'qprefix': 'uptet17', 'year': 2017, 'exam': EXAM17,
+        'title': {'en': 'UPTET 2017 · Primary level (Classes I–V) · Paper I',
+                  'hi': 'UPTET 2017 · प्राथमिक स्तर (कक्षा 1–5) · प्रथम प्रश्न-पत्र'},
+        'paper_code': 'UPTET-2017-P1',
+        'level': 'primary',
+        'sections': ['p_cdp', 'p_hin', 'p_eng', 'p_math', 'p_evs'],
+        'what': 'Primary level paper (Classes I–V), with English as Language II. The solved paper prints most '
+                'questions in Hindi only; their English text is a translation by UPTET Saathi',
+    },
+    {
+        'id': 'uptet-2017-junior-social-studies',
+        'pkg': 'u17', 'qprefix': 'uptet17', 'year': 2017, 'exam': EXAM17,
+        'title': {'en': 'UPTET 2017 · Junior level (Classes VI–VIII) · Social Studies',
+                  'hi': 'UPTET 2017 · उच्च प्राथमिक स्तर (कक्षा 6–8) · सामाजिक अध्ययन'},
+        'paper_code': 'UPTET-2017-P2-SST',
         'level': 'junior',
         'sections': ['j_cdp', 'j_hin', 'j_eng', 'j_sst'],
         'what': 'Junior level paper (Classes VI–VIII), with English as Language II and the Social Studies option. '
@@ -211,6 +238,8 @@ def build_section(mod, sources, keys, problems):
         fix = mod.FIX.get(n, {})
         en, hi = fix.get('en', q['en']), fix.get('hi', q['hi'])
         options = [(o['en'], o['hi']) for o in q['options']]
+        # Options run together on one printed line parse as fewer than four; FIX supplies them.
+        options += [(None, None)] * (4 - len(options))
         fixed = set()
         for i, letter in enumerate('abcd'):
             if letter in fix.get('options', {}):
@@ -404,7 +433,7 @@ def main():
     new_papers.sort(key=lambda p: -p['year'])  # newest first; stable within a year
     pack['papers'] = [{k: p[k] for k in order if k in p} for p in new_papers + pack['papers']]
     pack['questions'] += questions
-    pack['content_version'] = '2026.10.28-uptet.4'
+    pack['content_version'] = '2026.10.29-uptet.5'
 
     open(pack_path, 'w', encoding='utf-8', newline='\n').write(dump(pack) + '\n')
     for p in new_papers:

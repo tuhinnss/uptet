@@ -1,0 +1,108 @@
+"""English translation of UPTET 2017 Junior (Social Studies), Part I (Q1–30): Child Development and Pedagogy.
+
+The solved paper prints this section in Hindi only; this is our own translation.
+EN: {n: (question, options or None to reuse the Hindi ones, explanation)}.
+"""
+
+EN = {
+    1: ('Which article of the Indian Constitution includes the right to free and compulsory education for children aged '
+        '6–14?',
+        ['Article 26', 'Article 15', 'Article 45', 'Article 21A'],
+        'Article 21A, added by the 86th Amendment (2002), makes free and compulsory education a fundamental right of '
+        'children aged 6 to 14.'),
+    2: ('Into which main types did Kretschmer classify personality?',
+        ['Asthenic (lean)', 'Athletic', 'Pyknic (round)', 'All of the above'],
+        'Kretschmer gave three body-build types of personality: asthenic (lean), athletic and pyknic (round).'),
+    4: ('The theory of consolidation explains which of the following?',
+        ['Learning', 'Memory', 'Motivation', 'Creativity'],
+        'Consolidation theory says that what is learnt takes time to become fixed in the brain; it explains memory.'),
+    5: ('Which of the following is the most subjective method of educational psychology?',
+        ['Introspection', 'Extrospection', 'Observation', 'Experimentation'],
+        'In introspection a person looks at their own mental experiences, so it is the most subjective method.'),
+    6: ('Albert Bandura is associated with which of the following?',
+        ['Social learning theory', 'Behaviourist theory', 'Theory of cognitive development',
+         'Psychosexual development'],
+        'Albert Bandura gave the theory of social learning (learning by observation), as in the Bobo doll experiment.'),
+    7: ('A plateau in the learning curve forms–',
+        ['because of maturation', 'because of motivation', 'because of fatigue', 'because of interest'],
+        'According to the answer key, a plateau in the learning curve forms because of fatigue; low motivation and '
+        'limits of practice also cause it.'),
+    8: ('The mirror drawing test is used to measure what?',
+        ['Speed of learning', 'Transfer of learning', 'Creativity', 'Interest'],
+        'The mirror drawing test measures how a skill learnt with one hand transfers to the other, that is, transfer '
+        'of learning.'),
+    9: ('The cloud picture test is used to measure which of the following?',
+        ['Intelligence', 'Personality', 'Aptitude', 'Interest'],
+        'The cloud picture test is a projective test used to measure personality.'),
+    10: ('Which of the following is different from the others?',
+         ['T.A.T.', '16 P.F.', "Raven's test", 'Draw-a-Man test'],
+         "According to the answer key, the TAT, 16 PF and Draw-a-Man are used to assess personality, while Raven's "
+         'test is an intelligence test, so it is the odd one out.'),
+    11: ('The median of 7, 8, 9, 10, 11, 12 is', None,
+         'The median of six numbers is the average of the middle two: (9 + 10) ÷ 2 = 9.5.'),
+    12: ('Who propounded the theory of insight?',
+         ['Thorndike', 'Gestalt psychologists', 'Hegarty', 'Skinner'],
+         'The theory of learning by insight was given by the Gestalt psychologists (Köhler, Koffka, Wertheimer).'),
+    13: ('According to McDougall, each instinct is linked with–',
+         ['cognition', 'an emotion', 'sensation', 'thinking'],
+         'According to McDougall, each instinct has an emotion linked with it, such as fear with escape.'),
+    14: ('Giving meaning to a sensation on the basis of past experience is called–',
+         ['sensation', 'perception', 'motivation', 'imagination'],
+         'Giving meaning to a sensation on the basis of past experience is perception.'),
+    15: ('Five-year-old Mohan has a mental age of eight years. What is his IQ?', None,
+         'IQ = (mental age ÷ chronological age) × 100 = (8 ÷ 5) × 100 = 160.'),
+    16: ('Which IQ range is called the trainable level for mentally retarded children?',
+         ['70–79', '50–69', '36–49', '35 and below'],
+         'According to the answer key, mentally retarded children with an IQ of 36–49 are considered trainable; 50–69 '
+         'are educable.'),
+    17: ('The Rorschach inkblot test is used to measure which of the following?',
+         ['Personality', 'Intelligence', 'Interest', 'Aptitude'],
+         'The Rorschach inkblot test is a projective test of personality.'),
+    18: ('Which of the following is not a cause of forgetting?',
+         ['Weak learning', 'The wish to remember', 'Mental conflict', 'Faulty methods of learning'],
+         'Weak learning, mental conflict and faulty methods cause forgetting. The wish to remember helps memory.'),
+    19: ('The science concerned with methods of collecting, classifying, presenting, comparing and interpreting '
+         'numerical data is called–',
+         ['statistics', 'mathematics', 'geometry', 'probability'],
+         'The science of collecting, presenting, comparing and interpreting numerical data is statistics.'),
+    20: ('Who gave the concept of the educational quotient for backward children?',
+         ['Gordon', 'Schonell', 'Burton Hall', 'Cyril Burt'],
+         'According to the answer key, Cyril Burt gave the concept of the educational quotient for backward children.'),
+    21: ('Which of the following is not a characteristic of a good test?',
+         ['Reliability', 'Validity', 'Objectivity', 'Aptitude'],
+         'A good test is reliable, valid and objective. Aptitude is an ability a test may measure, not a quality of '
+         'the test.'),
+    22: ('Which of the following is not a theory of intelligence?',
+         ['Uni-factor theory', 'Two-factor theory', 'Theory of recall', 'Multi-factor theory'],
+         'Uni-factor, two-factor and multi-factor are theories of intelligence. Recall is not a theory of '
+         'intelligence.'),
+    23: ('Which of the following is not an endocrine gland?',
+         ['Adrenal gland', 'Pituitary gland', 'Salivary gland', 'Thyroid gland'],
+         'The salivary gland is an exocrine gland: its secretion flows out through a duct. The adrenal, pituitary and '
+         'thyroid are endocrine glands.'),
+    24: ("According to Piaget, the second stage of cognitive development is–",
+         ['the sensorimotor stage', 'the formal operational stage', 'the pre-operational stage',
+          'the concrete operational stage'],
+         "Piaget's stages are sensorimotor (0–2 years), pre-operational (2–7), concrete operational (7–11) and formal "
+         'operational (11 on). The second is pre-operational.'),
+    25: ('Which factor affects physical development?',
+         ['Heredity', 'Environment', 'Play and exercise', 'All of the above'],
+         'Heredity, environment (such as nutrition) and play and exercise all affect physical development.'),
+    26: ('Which of the following is the correct formula for calculating IQ?',
+         ['(Mental age / Chronological age) × 100', 'Chronological age / Mental age',
+          '(Chronological age / Mental age) × 100', 'Mental age / (Chronological age × 100)'],
+         'IQ = (mental age ÷ chronological age) × 100.'),
+    27: ('Which of these discussed "reflective thinking"?',
+         ['Dewey', 'Ross', 'Woodworth', 'Drever'],
+         'John Dewey discussed reflective thinking in his book "How We Think".'),
+    28: ('Which of the following is not one of the steps of inductive reasoning?',
+         ['Observation', 'Experiment', 'Generalisation', 'Imagination'],
+         'Inductive reasoning moves through observation, experiment and generalisation. Imagination is not one of its '
+         'steps.'),
+    29: ('Failing to retain and recall what has been learnt is–',
+         ['forgetting', 'remembering', 'retention', 'thinking'],
+         'Failing to retain or recall what was learnt is forgetting.'),
+    30: ('A main feature of an instinct is that it is found–',
+         ['only in humans', 'only in cats', 'in all living beings, and it is innate and natural', 'only in artists'],
+         'Instincts are innate and natural, and are found in all living beings.'),
+}

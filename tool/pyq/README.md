@@ -10,7 +10,7 @@ python -m venv .venv && .venv/Scripts/pip install -r tool/pyq/requirements.txt
 
 Run every script with `python -I` and pass paths as arguments.
 
-## UPTET 2018, 2019, 2021 (YCT solved papers)
+## UPTET 2017, 2018, 2019, 2021 (YCT solved papers)
 
 The Hindi text uses the APS-DV-Priyanka legacy font; `aps2uni.py` converts it to Unicode.
 
@@ -21,9 +21,9 @@ The Hindi text uses the APS-DV-Priyanka legacy font; `aps2uni.py` converts it to
    them into the pack, replacing what an earlier run added.
 
 PDF names expected in the data directory: `primary`, `junior_ss`, `junior_ms` (2019),
-`primary18`, `junior_ss18`, `primary21`, `junior_ss21`.
+`primary17`, `junior_ss17`, `primary18`, `junior_ss18`, `primary21`, `junior_ss21`.
 
-Each section of a paper is a module in `u18/`, `u19/` or `u21/` (`p_` Primary, `j_` Junior) with:
+Each section of a paper is a module in `u17/`, `u18/`, `u19/` or `u21/` (`p_` Primary, `j_` Junior) with:
 `TOPICS`, `SKIP` (questions left out, with the reason), `PASSAGES`, `REPLACE` (text fixes),
 `FIX` (whole-field overrides) and `EXPLAIN` (our own explanations, `(en, hi)`).
 
