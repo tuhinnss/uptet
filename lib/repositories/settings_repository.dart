@@ -17,6 +17,13 @@ class SettingsRepository {
 
   Future<void> setLanguage(AppLanguage language) => _set('language', language.name);
 
+  Future<Exam?> exam() async {
+    final rows = await _db.query('settings', columns: ['value'], where: 'key = ?', whereArgs: ['exam']);
+    return rows.isEmpty ? null : Exam.fromCode(rows.first['value'] as String);
+  }
+
+  Future<void> setExam(Exam exam) => _set('exam', exam.name);
+
   /// The settings used for the last paper, offered again for the next one.
   Future<TestSettings> testSettings() async {
     final rows = await _db.query('settings', columns: ['value'], where: 'key = ?', whereArgs: ['test_settings']);

@@ -91,8 +91,12 @@ class S {
       'जाँच के बाद ऐप में जोड़े गए प्रश्नपत्र यहाँ दिखेंगे।');
   String examPapers(Exam exam) => switch (exam) {
         Exam.uptet => _t('UPTET previous papers', 'UPTET के पिछले प्रश्नपत्र'),
+        Exam.supertet => _t('Super TET previous papers', 'Super TET के पिछले प्रश्नपत्र'),
         Exam.ctet => _t('CTET previous papers', 'CTET के पिछले प्रश्नपत्र'),
       };
+  String get chooseExam => _t('Exam', 'परीक्षा');
+  String get noExamSubjects =>
+      _t('No questions have been added for this exam yet.', 'इस परीक्षा के प्रश्न अभी नहीं जोड़े गए हैं।');
   String levelName(ExamLevel level) => switch (level) {
         ExamLevel.primary => _t('Primary level · Classes I–V', 'प्राथमिक स्तर · कक्षा 1–5'),
         ExamLevel.junior => _t('Junior level · Classes VI–VIII', 'उच्च प्राथमिक (जूनियर) स्तर · कक्षा 6–8'),
@@ -261,6 +265,7 @@ class S {
   String paperCount(int n) => _t(n == 1 ? '1 paper' : '$n papers', '$n प्रश्नपत्र');
   String examName(Exam exam) => switch (exam) {
         Exam.uptet => 'UPTET',
+        Exam.supertet => 'Super TET',
         Exam.ctet => 'CTET',
       };
   String levelShort(ExamLevel level) => switch (level) {
@@ -338,7 +343,7 @@ class S {
   }
 
   // Syllabus
-  String get examPattern => _t('UPTET exam pattern', 'UPTET परीक्षा पैटर्न');
+  String examPattern(Exam exam) => _t('${examName(exam)} exam pattern', '${examName(exam)} परीक्षा पैटर्न');
   String get paperOne => _t('Paper I · Primary (Classes 1 to 5)', 'प्रश्नपत्र I · प्राथमिक (कक्षा 1 से 5)');
   String get paperTwo => _t('Paper II · Junior (Classes 6 to 8)', 'प्रश्नपत्र II · जूनियर (कक्षा 6 से 8)');
   String get sectionCdp => _t('Child Development & Pedagogy', 'बाल विकास एवं शिक्षण विधि');
@@ -354,6 +359,27 @@ class S {
           'To qualify you need 60% (90 marks) in the general category and 55% in reserved categories.',
       'हर प्रश्न एक अंक का है और कोई ऋणात्मक अंकन नहीं है। '
           'उत्तीर्ण होने के लिए सामान्य वर्ग में 60% (90 अंक) और आरक्षित वर्गों में 55% अंक चाहिए।');
+  String get ctetPatternRules => _t(
+      'Every question carries one mark and there is no negative marking. '
+          'To qualify you need 60% (90 marks); recruiting governments may allow a lower mark for reserved categories.',
+      'हर प्रश्न एक अंक का है और कोई ऋणात्मक अंकन नहीं है। '
+          'उत्तीर्ण होने के लिए 60% (90 अंक) चाहिए; भर्ती करने वाली सरकारें आरक्षित वर्गों को छूट दे सकती हैं।');
+  String get superTetPaper => _t('Assistant Teacher Recruitment Exam · Primary (Classes 1 to 5)',
+      'सहायक अध्यापक भर्ती परीक्षा · प्राथमिक (कक्षा 1 से 5)');
+  String get sectionHindi => _t('Hindi', 'हिन्दी');
+  String get sectionSanskrit => _t('Sanskrit', 'संस्कृत');
+  String get sectionEnglish => _t('English', 'अंग्रेज़ी');
+  String get sectionGk => _t('General Knowledge', 'सामान्य ज्ञान');
+  String get sectionScience => _t('Science', 'विज्ञान');
+  String get sectionCurrentAffairs => _t('General Knowledge & Current Affairs', 'सामान्य ज्ञान एवं समसामयिकी');
+  String get sectionLifeSkills => _t('Life Skills, Management & Aptitude', 'जीवन कौशल, प्रबंधन एवं अभिवृत्ति');
+  String get sectionReasoning => _t('Reasoning', 'तार्किक क्षमता');
+  String get sectionIct => _t('Information & Communication Technology', 'सूचना एवं संचार प्रौद्योगिकी');
+  String get superTetPatternRules => _t(
+      'The sections above are those of the 2019 paper. Every question carries one mark and there is no negative marking. '
+          'In 2019 candidates needed 65% (general) or 60% (reserved categories) to qualify.',
+      'ऊपर के खंड 2019 के प्रश्नपत्र के हैं। हर प्रश्न एक अंक का है और कोई ऋणात्मक अंकन नहीं है। '
+          '2019 में उत्तीर्ण होने के लिए सामान्य वर्ग में 65% और आरक्षित वर्गों में 60% अंक चाहिए थे।');
   String get patternNote =>
       _t('The pattern can change. Always check the latest official notification.', 'पैटर्न बदल सकता है। हमेशा नवीनतम आधिकारिक अधिसूचना देखें।');
   String get topicsInApp => _t('Topics you can practise here', 'यहाँ अभ्यास के लिए उपलब्ध प्रकरण');

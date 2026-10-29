@@ -7,8 +7,8 @@ import '../widgets/brand.dart';
 import '../widgets/common.dart';
 import 'paper_detail_screen.dart';
 
-/// Official papers grouped by exam and year, newest first. A year with
-/// several papers opens in place to list them by level.
+/// Official papers of the exam chosen in the header, by year, newest first. A
+/// year with several papers opens in place to list them by level.
 class PapersScreen extends StatelessWidget {
   const PapersScreen({super.key});
 
@@ -16,10 +16,10 @@ class PapersScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final s = S.of(context);
     final app = AppScope.of(context);
-    final groups = officialPaperGroups(app.content.papers);
+    final groups = officialPaperGroups(app.content.papers.where((p) => p.exam == app.exam).toList());
     return BrandPage(
       children: [
-        SectionTitle(s.previousPapers),
+        SectionTitle(s.examPapers(app.exam)),
         if (groups.isEmpty)
           EmptyState(icon: Icons.description_outlined, title: s.noPapers, message: s.noPapersHint)
         else

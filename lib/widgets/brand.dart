@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../app_state.dart';
 import '../l10n/strings.dart';
+import '../models/content.dart';
 import '../screens/about_screen.dart';
 import '../theme.dart';
 
@@ -21,17 +23,18 @@ class BrandAssets {
 
 /// A main page: the mint brand header above a teal, scrollable body.
 class BrandPage extends StatelessWidget {
-  const BrandPage({super.key, required this.children, this.showAbout = true});
+  const BrandPage({super.key, required this.children, this.showAbout = true, this.showExams = true});
 
   final List<Widget> children;
   final bool showAbout;
+  final bool showExams;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
         children: [
-          BrandHeader(showAbout: showAbout),
+          BrandHeader(showAbout: showAbout, showExams: showExams),
           Expanded(
             child: ListView(padding: const EdgeInsets.fromLTRB(16, 20, 16, 24), children: children),
           ),
@@ -42,10 +45,12 @@ class BrandPage extends StatelessWidget {
 }
 
 /// Logo on the left and the About Us link on the right, on a mint band with a curved lower edge.
+/// Below them, the exam switch that decides which papers and topics are shown.
 class BrandHeader extends StatelessWidget {
-  const BrandHeader({super.key, this.showAbout = true});
+  const BrandHeader({super.key, this.showAbout = true, this.showExams = true});
 
   final bool showAbout;
+  final bool showExams;
 
   @override
   Widget build(BuildContext context) {
@@ -58,36 +63,94 @@ class BrandHeader extends StatelessWidget {
       child: SafeArea(
         bottom: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(8, 4, 12, 6),
-          child: Row(
+          padding: EdgeInsets.fromLTRB(8, 4, 12, showExams ? 12 : 6),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Semantics(
-                label: s.appName,
-                image: true,
-                child: Image.asset(BrandAssets.logo, height: 72, fit: BoxFit.contain),
-              ),
-              const Spacer(),
-              if (showAbout)
-                InkWell(
-                  borderRadius: BorderRadius.circular(12),
-                  onTap: () => AboutScreen.open(context),
-                  child: Padding(
-                    padding: const EdgeInsets.all(4),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Image.asset(BrandAssets.aboutUs, height: 44, excludeFromSemantics: true),
-                        Text(
-                          s.aboutUs,
-                          style: const TextStyle(color: AppColors.accentTeal, fontWeight: FontWeight.w700, fontSize: 15),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+              _logoRow(context, s),
+              if (showExams) const Padding(padding: EdgeInsets.fromLTRB(8, 4, 0, 0), child: ExamSwitch()),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _logoRow(BuildContext context, S s) => Row(
+        children: [
+          Semantics(
+            label: s.appName,
+            image: true,
+            child: Image.asset(BrandAssets.logo, height: 72, fit: BoxFit.contain),
+          ),
+          const Spacer(),
+          if (showAbout)
+            InkWell(
+              borderRadius: BorderRadius.circular(12),
+              onTap: () => AboutScreen.open(context),
+              child: Padding(
+                padding: const EdgeInsets.all(4),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Image.asset(BrandAssets.aboutUs, height: 44, excludeFromSemantics: true),
+                    Text(
+                      s.aboutUs,
+                      style: const TextStyle(color: AppColors.accentTeal, fontWeight: FontWeight.w700, fontSize: 15),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
+      );
+}
+
+/// UPTET, Super TET and CTET as three pills; the selected one is filled.
+class ExamSwitch extends StatelessWidget {
+  const ExamSwitch({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final s = S.of(context);
+    final app = AppScope.of(context);
+    return Semantics(
+      label: s.chooseExam,
+      container: true,
+      child: Row(
+        children: [
+          for (final exam in Exam.values) ...[
+            if (exam != Exam.values.first) const SizedBox(width: 8),
+            Expanded(
+              child: Semantics(
+                selected: exam == app.exam,
+                button: true,
+                child: Material(
+                  color: exam == app.exam ? AppColors.accentTeal : Colors.white,
+                  shape: const StadiumBorder(side: BorderSide(color: AppColors.accentTeal, width: 1.5)),
+                  clipBehavior: Clip.antiAlias,
+                  child: InkWell(
+                    onTap: () => app.setExam(exam),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                      child: Text(
+                        s.examName(exam),
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: exam == app.exam ? Colors.white : AppColors.accentTeal,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }

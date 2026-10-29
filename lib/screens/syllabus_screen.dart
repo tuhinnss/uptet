@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 
 import '../app_state.dart';
 import '../l10n/strings.dart';
+import '../models/content.dart';
 import '../theme.dart';
 import '../widgets/brand.dart';
 import '../widgets/subject_icon.dart';
 import 'quiz_launcher.dart';
 
-/// The UPTET exam pattern, then the subjects and topics this app covers.
+/// The pattern of the exam chosen in the header, then the subjects and topics
+/// this app covers for it.
 class SyllabusScreen extends StatelessWidget {
   const SyllabusScreen({super.key});
 
@@ -18,42 +20,71 @@ class SyllabusScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final s = S.of(context);
     final app = AppScope.of(context);
+    final exam = app.exam;
     return BrandPage(
       children: [
         SectionTitle(s.syllabus, back: true),
-        _PatternCard(
-          title: s.paperOne,
-          rows: [
-            (s.sectionCdp, 30),
-            (s.sectionLanguageOne, 30),
-            (s.sectionLanguageTwo, 30),
-            (s.sectionMaths, 30),
-            (s.sectionEvs, 30),
-          ],
+        SectionTitle(s.examPattern(exam), size: 22),
+        if (exam == Exam.supertet)
+          _PatternCard(
+            title: s.superTetPaper,
+            rows: [
+              (s.sectionHindi, 20),
+              (s.sectionSanskrit, 10),
+              (s.sectionEnglish, 10),
+              (s.sectionGk, 10),
+              (s.sectionCdp, 20),
+              (s.sectionScience, 10),
+              (s.sectionMaths, 20),
+              (s.sectionCurrentAffairs, 30),
+              (s.sectionLifeSkills, 10),
+              (s.sectionReasoning, 5),
+              (s.sectionIct, 5),
+            ],
+          )
+        else ...[
+          // UPTET and CTET share the two-paper pattern.
+          _PatternCard(
+            title: s.paperOne,
+            rows: [
+              (s.sectionCdp, 30),
+              (s.sectionLanguageOne, 30),
+              (s.sectionLanguageTwo, 30),
+              (s.sectionMaths, 30),
+              (s.sectionEvs, 30),
+            ],
+          ),
+          _PatternCard(
+            title: s.paperTwo,
+            rows: [
+              (s.sectionCdp, 30),
+              (s.sectionLanguageOne, 30),
+              (s.sectionLanguageTwo, 30),
+              (s.sectionMathsScienceOrSst, 60),
+            ],
+          ),
+        ],
+        Text(
+          switch (exam) {
+            Exam.uptet => s.patternRules,
+            Exam.supertet => s.superTetPatternRules,
+            Exam.ctet => s.ctetPatternRules,
+          },
+          style: const TextStyle(color: Colors.white, fontSize: 15, height: 1.5),
         ),
-        _PatternCard(
-          title: s.paperTwo,
-          rows: [
-            (s.sectionCdp, 30),
-            (s.sectionLanguageOne, 30),
-            (s.sectionLanguageTwo, 30),
-            (s.sectionMathsScienceOrSst, 60),
-          ],
-        ),
-        Text(s.patternRules, style: const TextStyle(color: Colors.white, fontSize: 15, height: 1.5)),
         const SizedBox(height: 8),
         Text(s.patternNote, style: const TextStyle(color: Colors.white70, fontSize: 13, height: 1.4)),
         const SizedBox(height: 24),
         SectionTitle(s.topicsInApp, size: 22),
-        for (final subject in app.content.subjects)
+        for (final subject in app.content.subjectsFor(exam))
           ExpandableBrandCard(
             icon: subjectIcon(subject),
             title: subject.name.resolve(app.language).text,
-            subtitle: s.questionsCount(app.content.questionCountForSubject(subject.id)),
+            subtitle: s.questionsCount(app.content.questionCountForSubject(subject.id, exam: exam)),
             children: [
               for (final topic in app.content.topicsFor(subject.id))
                 Builder(builder: (context) {
-                  final count = app.content.questionsForTopic(topic.id).length;
+                  final count = app.content.questionsForTopic(topic.id, exam: exam).length;
                   return InnerCard(
                     title: topic.name.resolve(app.language).text,
                     subtitle: count > 0 ? s.questionsCount(count) : s.noTopicQuestions,

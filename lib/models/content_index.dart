@@ -62,13 +62,26 @@ class ContentIndex {
   }
 
   /// Active questions of a topic in content order, including paper questions.
-  List<Question> questionsForTopic(String topicId) => _questions.values
-      .where((q) => q.topicId == topicId && _activeQuestionIds.contains(q.id))
+  /// With [exam], only questions from that exam's papers.
+  List<Question> questionsForTopic(String topicId, {Exam? exam}) => _questions.values
+      .where((q) =>
+          q.topicId == topicId &&
+          _activeQuestionIds.contains(q.id) &&
+          (exam == null || _questionIdsOf(exam).contains(q.id)))
       .toList()
     ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
 
-  int questionCountForSubject(String subjectId) => topicsFor(subjectId)
-      .fold(0, (sum, topic) => sum + questionsForTopic(topic.id).length);
+  int questionCountForSubject(String subjectId, {Exam? exam}) => topicsFor(subjectId)
+      .fold(0, (sum, topic) => sum + questionsForTopic(topic.id, exam: exam).length);
+
+  /// Active subjects that have questions from [exam]'s papers.
+  List<Subject> subjectsFor(Exam exam) =>
+      subjects.where((s) => questionCountForSubject(s.id, exam: exam) > 0).toList();
+
+  final Map<Exam, Set<String>> _examQuestionIds = {};
+
+  Set<String> _questionIdsOf(Exam exam) =>
+      _examQuestionIds[exam] ??= {for (final p in papers) if (p.exam == exam) ...p.questionIds};
 
   /// Languages the paper's active questions are fully available in.
   Set<AppLanguage> paperLanguages(String paperId) =>

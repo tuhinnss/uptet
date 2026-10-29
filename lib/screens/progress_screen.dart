@@ -97,7 +97,7 @@ class _Report extends StatelessWidget {
             for (final w in weak)
               Builder(builder: (context) {
                 final topic = content.topic(w.topicId);
-                final canPractise = topic != null && content.questionsForTopic(topic.id).isNotEmpty;
+                final canPractise = topic != null && content.questionsForTopic(topic.id, exam: app.exam).isNotEmpty;
                 return InnerCard(
                   icon: const Icon(Icons.flag_outlined),
                   title: topicName(w.topicId),

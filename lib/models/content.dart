@@ -127,8 +127,19 @@ class Subject {
   final AppLanguage? language;
 }
 
-/// The exam a previous-year paper was set for.
-enum Exam { uptet, ctet }
+/// The exam a previous-year paper was set for, in the order the header offers them.
+enum Exam {
+  uptet,
+  supertet,
+  ctet;
+
+  static Exam? fromCode(String? code) {
+    for (final exam in values) {
+      if (exam.name == code) return exam;
+    }
+    return null;
+  }
+}
 
 /// Teaching level of a paper: classes I–V or VI–VIII.
 enum ExamLevel { primary, junior }

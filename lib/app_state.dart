@@ -13,10 +13,12 @@ class AppController extends ChangeNotifier {
     required this.progress,
     required SettingsRepository settings,
     required AppLanguage? language,
+    Exam? exam,
     this.contentWarning,
     this.bundledPdfs = const {},
   })  : _settings = settings,
-        _language = language;
+        _language = language,
+        _exam = exam ?? Exam.uptet;
 
   final ContentIndex content;
   final ProgressRepository progress;
@@ -40,11 +42,27 @@ class AppController extends ChangeNotifier {
   }
 
   AppLanguage? _language;
+  Exam _exam;
   int _dataRevision = 0;
 
   bool get hasChosenLanguage => _language != null;
   AppLanguage get language => _language ?? AppLanguage.hi;
   int get dataRevision => _dataRevision;
+
+  /// The exam chosen in the header: papers and topic practice show only its content.
+  Exam get exam => _exam;
+
+  Future<void> setExam(Exam exam) async {
+    if (exam == _exam) return;
+    _exam = exam;
+    notifyListeners();
+    try {
+      await _settings.setExam(exam);
+    } catch (e) {
+      // The choice still applies for this session.
+      debugPrint('Could not save exam: $e');
+    }
+  }
 
   Future<void> setLanguage(AppLanguage language) async {
     _language = language;

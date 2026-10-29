@@ -67,7 +67,8 @@ Future<void> startQuiz(
   if (context.mounted) await QuizScreen.open(context, attemptId);
 }
 
-/// Topic practice: offers to resume an unfinished attempt before starting anew.
+/// Topic practice on the questions of the exam chosen in the header: offers
+/// to resume an unfinished attempt before starting anew.
 Future<void> startOrResumeTopic(BuildContext context, Topic topic) async {
   final app = AppScope.read(context);
   final s = S.of(context);
@@ -97,7 +98,7 @@ Future<void> startOrResumeTopic(BuildContext context, Topic topic) async {
     context,
     kind: AttemptKind.topic,
     topicId: topic.id,
-    questions: app.content.questionsForTopic(topic.id),
+    questions: app.content.questionsForTopic(topic.id, exam: app.exam),
     marking: MarkingScheme.oneMarkNoNegative,
   );
 }

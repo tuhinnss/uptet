@@ -9,6 +9,7 @@ import 'package:uptet_saathi/models/content_index.dart';
 import 'package:uptet_saathi/models/revision.dart';
 import 'package:uptet_saathi/repositories/content_repository.dart';
 import 'package:uptet_saathi/repositories/progress_repository.dart';
+import 'package:uptet_saathi/repositories/settings_repository.dart';
 
 import '../helpers.dart';
 
@@ -218,6 +219,39 @@ void main() {
     expect(updated.paper('p2')!.level, ExamLevel.junior);
     expect(updated.papersFor(Exam.uptet, ExamLevel.junior).map((p) => p.id), ['p2']);
     expect(updated.subject('s1')!.language, AppLanguage.hi);
+  });
+
+  test('topic practice and subjects follow the chosen exam', () async {
+    final json = samplePackJson(version: 'v2');
+    final papers = json['papers'] as List;
+    papers
+      ..add({...papers.first as Map<String, Object?>, 'id': 'p2', 'exam': 'uptet', 'level': 'primary'})
+      ..add({
+        ...papers.first as Map<String, Object?>,
+        'id': 'p3',
+        'exam': 'supertet',
+        'level': 'primary',
+        'question_ids': ['q3'],
+        'question_count': 1,
+      });
+    final repo = ContentRepository(db);
+    await repo.importPack(ContentPack.fromJson(json));
+    final updated = await repo.loadIndex();
+
+    expect(updated.questionsForTopic('t1', exam: Exam.uptet).map((q) => q.id), ['q1', 'q2']);
+    expect(updated.questionsForTopic('t1', exam: Exam.supertet), isEmpty);
+    expect(updated.questionsForTopic('t2', exam: Exam.supertet).map((q) => q.id), ['q3']);
+    expect(updated.questionsForTopic('t2').map((q) => q.id), ['q3']);
+    expect(updated.questionCountForSubject('s1', exam: Exam.supertet), 1);
+    expect(updated.subjectsFor(Exam.ctet), isEmpty);
+    expect(updated.paper('p3')!.exam, Exam.supertet);
+  });
+
+  test('the chosen exam is remembered', () async {
+    final settings = SettingsRepository(db);
+    expect(await settings.exam(), isNull);
+    await settings.setExam(Exam.supertet);
+    expect(await settings.exam(), Exam.supertet);
   });
 
   test('progress report groups answers by topic', () async {

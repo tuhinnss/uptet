@@ -371,7 +371,7 @@ class _QuizScreenState extends State<QuizScreen> with WidgetsBindingObserver {
       child: Scaffold(
         body: Column(
           children: [
-            const BrandHeader(showAbout: false),
+            const BrandHeader(showAbout: false, showExams: false),
             Padding(
               padding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
               child: Row(

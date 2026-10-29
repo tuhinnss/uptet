@@ -28,7 +28,9 @@ class SubjectScreen extends StatelessWidget {
     final topics = content.topicsFor(subjectId);
     final papers = [
       for (final paper in content.papers)
-        if (content.questionsForPaper(paper.id).any((q) => q.subjectId == subjectId)) paper,
+        if ((paper.exam == null || paper.exam == app.exam) &&
+            content.questionsForPaper(paper.id).any((q) => q.subjectId == subjectId))
+          paper,
     ];
     return BrandPage(
       children: [
@@ -36,7 +38,7 @@ class SubjectScreen extends StatelessWidget {
         ExpandableBrandCard(
           icon: const Icon(Icons.description_outlined),
           title: s.topicWiseQuestions,
-          subtitle: s.questionsCount(content.questionCountForSubject(subjectId)),
+          subtitle: s.questionsCount(content.questionCountForSubject(subjectId, exam: app.exam)),
           initiallyExpanded: true,
           children: [
             if (topics.isEmpty)
@@ -44,7 +46,7 @@ class SubjectScreen extends StatelessWidget {
             else
               for (final topic in topics)
                 Builder(builder: (context) {
-                  final count = content.questionsForTopic(topic.id).length;
+                  final count = content.questionsForTopic(topic.id, exam: app.exam).length;
                   return InnerCard(
                     icon: const Icon(Icons.edit_note),
                     title: topic.name.resolve(app.language).text,

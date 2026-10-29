@@ -70,6 +70,7 @@ Future<AppController> bootstrap({
     progress: ProgressRepository(db, clock: clock),
     settings: settings,
     language: await settings.language(),
+    exam: await settings.exam(),
     contentWarning: warning,
     bundledPdfs: pdfs,
   );
