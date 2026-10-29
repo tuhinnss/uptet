@@ -10,6 +10,7 @@ flutter test                                  # all tests (sqflite_common_ffi, n
 flutter analyze
 dart run tool/validate_content.dart           # validate assets/content/content_pack.json
 flutter build apk --release                   # build/app/outputs/flutter-apk/app-release.apk
+flutter build appbundle                       # build/app/outputs/bundle/release/app-release.aab (for Play)
 ```
 
 Run all three checks after any change to the content pack or the content model.
@@ -45,7 +46,8 @@ Run all three checks after any change to the content pack or the content model.
 - `distribution_cleared` and `release_ready` stay false until written permission arrives from
   the rights holders: CBSE for CTET, and Pariksha Niyamak Pradhikari UP, Prayagraj
   (updeled.gov.in) for UPTET. examregulatoryauthorityup.in is not an official site.
-- Release signing still uses the debug key (`android/app/build.gradle.kts`).
+- Release builds are signed with the Play upload key named in `android/key.properties` (git-ignored; the
+  keystore lives outside the repo). Without that file they fall back to the debug key.
 
 ## Conventions
 
