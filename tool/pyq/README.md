@@ -29,6 +29,24 @@ Each section of a paper is a module in `u17/`, `u18/`, `u19/` or `u21/` (`p_` Pr
 
 `aps_contexts.py` and `glyph_words.py` help find words the converter gets wrong.
 
+## UP Super TET 2019 (ATRE 2019, Booklet Series A)
+
+Source: the retypeset Series A booklet with all four answer keys at the end
+(`UP_Super_TET_2019_Question_Paper_Clean.pdf` in the project's Drive folder; save it as
+`data/supertet/st19_clean.pdf`). Its Hindi is real Unicode, so PyMuPDF reads it directly; only doubled
+vowel signs need collapsing. The scanned booklet in the same folder has a candidate's pen marks, and the
+"2018" file there is not a Super TET paper (short-answer questions from a third-party site).
+
+```
+.venv/Scripts/python -I tool/pyq/build_supertet.py tool/pyq/data/supertet/st19_clean.pdf --dump parsed.txt
+.venv/Scripts/python -I tool/pyq/build_supertet.py tool/pyq/data/supertet/st19_clean.pdf assets/content/content_pack.json [review.txt]
+```
+
+The first form writes the parsed questions before any fixes. Each section is a module in `st19/` with
+`RANGE`, `LANGUAGE` (set for Hindi, Sanskrit and English), `TOPICS`, `SKIP`, `FIX` (whole-field or
+per-option overrides, used for verses, fractions and powers the text layer flattens) and `EXPLAIN`
+(`(en, hi)`). Copy the PDF to `assets/pdfs/supertet-2019.pdf` for the in-app viewer.
+
 ## CTET Feb 2026 Paper I, Set S
 
 `extract_ctet.py` reads `pdftotext -layout` output of the booklet and the final key;

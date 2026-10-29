@@ -4,6 +4,7 @@ import '../models/content.dart';
 
 /// Icon for a subject card. Language subjects show a letter of their script.
 Widget subjectIcon(Subject subject) {
+  if (subject.id == 'san') return const _Letter('सं');
   if (subject.language case final language?) {
     return _Letter(language == AppLanguage.hi ? 'अ' : 'A');
   }
@@ -13,6 +14,10 @@ Widget subjectIcon(Subject subject) {
     'evs' => Icons.eco_outlined,
     'sci' => Icons.science_outlined,
     'sst' => Icons.public,
+    'gk' => Icons.lightbulb_outline,
+    'life' => Icons.self_improvement,
+    'reason' => Icons.psychology_outlined,
+    'ict' => Icons.computer,
     _ => Icons.menu_book_outlined,
   });
 }
