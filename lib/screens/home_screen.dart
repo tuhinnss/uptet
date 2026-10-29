@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../app.dart';
 import '../app_state.dart';
+import '../config.dart';
 import '../l10n/strings.dart';
 import '../models/attempt.dart';
 import '../services/share_app.dart';
@@ -12,6 +14,18 @@ import '../widgets/common.dart';
 import '../widgets/settings_sheet.dart';
 import 'quiz_screen.dart';
 import 'syllabus_screen.dart';
+
+Future<void> _openWhatsAppGroup(BuildContext context) async {
+  final s = S.of(context);
+  final messenger = ScaffoldMessenger.of(context);
+  var opened = false;
+  try {
+    opened = await launchUrl(Uri.parse(AppConfig.whatsAppGroupUrl), mode: LaunchMode.externalApplication);
+  } catch (e) {
+    debugPrint('Could not open WhatsApp group: $e');
+  }
+  if (!opened) messenger.showSnackBar(SnackBar(content: Text(s.whatsAppOpenFailed)));
+}
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key, required this.onNavigate});
@@ -46,8 +60,12 @@ class HomeScreen extends StatelessWidget {
                   ),
                   Semantics(
                     label: s.bannerDescription,
-                    image: true,
-                    child: Image.asset(BrandAssets.banner, width: double.infinity, fit: BoxFit.fitWidth),
+                    button: true,
+                    excludeSemantics: true,
+                    child: GestureDetector(
+                      onTap: () => _openWhatsAppGroup(context),
+                      child: Image.asset(BrandAssets.banner, width: double.infinity, fit: BoxFit.fitWidth),
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),

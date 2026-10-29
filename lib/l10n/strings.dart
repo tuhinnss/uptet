@@ -79,8 +79,10 @@ class S {
   String get syllabusSubtitle => _t('Exam pattern & syllabus', 'परीक्षा पैटर्न और पाठ्यक्रम');
   String get aboutUs => _t('About Us', 'हमारे बारे में');
   String get bannerDescription => _t(
-      'Busy day? Keep learning. UPTET Saathi makes revision and question practice easy for working teachers and UPTET candidates.',
-      'व्यस्त दिन? सीखना जारी रखें। UPTET साथी कामकाजी शिक्षकों और UPTET अभ्यर्थियों के लिए दोहराई और प्रश्नों का अभ्यास आसान बनाता है।');
+      'Super TET test series from 21 November, with a detailed analysis after every test. Tap to join our WhatsApp group.',
+      'Super TET टेस्ट सीरीज़ 21 नवंबर से, हर टेस्ट के बाद विस्तृत विश्लेषण। हमारे WhatsApp समूह से जुड़ने के लिए टैप करें।');
+  String get whatsAppOpenFailed => _t('WhatsApp could not be opened. Please check your internet connection.',
+      'WhatsApp नहीं खुल सका। कृपया अपना इंटरनेट कनेक्शन जाँचें।');
   String get progressSubtitle => _t('Scores, accuracy and weak topics', 'अंक, सटीकता और कमज़ोर विषय');
 
   // Papers

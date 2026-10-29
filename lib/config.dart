@@ -24,6 +24,9 @@ class AppConfig {
   /// Store page shared by "Share UPTET Saathi". It works once the app is published.
   static const String playStoreUrl = 'https://play.google.com/store/apps/details?id=com.uptetsaathi.app';
 
+  /// WhatsApp group opened by tapping the home banner.
+  static const String whatsAppGroupUrl = 'https://chat.whatsapp.com/FzAbL2gqxb7Iogo9Ls3AkF';
+
   /// Google Form for pilot feedback (its "viewform" link). While empty, the
   /// feedback buttons are hidden. Can also be set at build time:
   /// `flutter build apk --dart-define=FEEDBACK_FORM_URL=https://docs.google.com/forms/d/e/.../viewform`
