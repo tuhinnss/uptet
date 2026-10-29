@@ -43,6 +43,12 @@ class AboutScreen extends StatelessWidget {
             Text(s.aboutBody, style: body),
             const SizedBox(height: 20),
             const Text(S.aboutTagline, style: body),
+            const SizedBox(height: 20),
+            // Play's policy for apps with government information: say it is not an official app, and name the sources.
+            Text(s.disclaimerTitle,
+                style: const TextStyle(color: AppColors.deepTeal, fontSize: 18, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 4),
+            Text(s.disclaimer, style: body.copyWith(fontSize: 15)),
             const SizedBox(height: 24),
             FilledButton.icon(
               style: FilledButton.styleFrom(

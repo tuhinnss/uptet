@@ -397,6 +397,17 @@ class S {
           'हमारा लक्ष्य है अभ्यास, दोहराई और हिन्दी व अंग्रेज़ी में सुलभ अध्ययन सामग्री के ज़रिए पढ़ाई को और सुविधाजनक बनाना।\n\n'
           'हम UPTET साथी को शिक्षक बनने की यात्रा में हर अभ्यर्थी का मददगार साथी बनाने के लिए लगातार काम कर रहे हैं।');
   static const aboutTagline = 'UPTET Saathi — आपकी तैयारी, हमारा साथ।';
+  String get disclaimerTitle => _t('Not a government app', 'सरकारी ऐप नहीं');
+  String get disclaimer => _t(
+      'UPTET Saathi is an independent study app. It is not affiliated with, endorsed by or acting for the '
+          'Pariksha Niyamak Pradhikari, Uttar Pradesh, the Central Board of Secondary Education (CBSE) or any '
+          'government body. The previous papers come from past UPTET, Super TET and CTET exams; the explanations '
+          'are our own. For official notices, syllabus and results, see updeled.gov.in (UPTET, Super TET) and '
+          'ctet.nic.in (CTET).',
+      'UPTET साथी एक स्वतंत्र अध्ययन ऐप है। इसका परीक्षा नियामक प्राधिकारी, उत्तर प्रदेश, केन्द्रीय माध्यमिक शिक्षा बोर्ड '
+          '(CBSE) या किसी भी सरकारी संस्था से कोई संबंध नहीं है, न ही यह उनकी ओर से काम करता है या उनके द्वारा अनुमोदित है। '
+          'पिछले प्रश्नपत्र UPTET, Super TET और CTET की पुरानी परीक्षाओं से लिए गए हैं; व्याख्याएँ हमारी अपनी हैं। आधिकारिक '
+          'सूचना, पाठ्यक्रम और परिणाम के लिए updeled.gov.in (UPTET, Super TET) और ctet.nic.in (CTET) देखें।');
   String get teamPhoto => _t('The UPTET Saathi team', 'UPTET साथी की टीम');
 }
 
