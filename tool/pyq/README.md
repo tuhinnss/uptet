@@ -29,6 +29,21 @@ Each section of a paper is a module in `u17/`, `u18/`, `u19/` or `u21/` (`p_` Pr
 
 `aps_contexts.py` and `glyph_words.py` help find words the converter gets wrong.
 
+### UPTET PDFs for the in-app viewer
+
+The Drive folders 17, 18, 19 and 21 hold the YCT solved papers as `UPTET_<level>_<year>_Questions_AnswerKey_Explanations.pdf`.
+Each has the questions, an answer key page, then YCT's explanations (from the first page with "Ans :" or
+"Ans."). Only the pages before the explanations are bundled, saved as `assets/pdfs/<paper id>.pdf`:
+
+```python
+d = pymupdf.open(src)
+i = next(i for i, p in enumerate(d) if re.search(r'Ans\s*[:.]', p.get_text()))
+d.select(list(range(i)))
+d.save(f'assets/pdfs/{paper_id}.pdf', garbage=4, deflate=True)
+```
+
+The 2021 Primary file is the cancelled sitting of 28 November 2021 (`uptet-2021-primary-cancelled`).
+
 ## UP Super TET 2019 (ATRE 2019, Booklet Series A)
 
 Source: the retypeset Series A booklet with all four answer keys at the end
