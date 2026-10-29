@@ -95,8 +95,6 @@ class S {
         Exam.ctet => _t('CTET previous papers', 'CTET के पिछले प्रश्नपत्र'),
       };
   String get chooseExam => _t('Exam', 'परीक्षा');
-  String get noExamSubjects =>
-      _t('No questions have been added for this exam yet.', 'इस परीक्षा के प्रश्न अभी नहीं जोड़े गए हैं।');
   String levelName(ExamLevel level) => switch (level) {
         ExamLevel.primary => _t('Primary level · Classes I–V', 'प्राथमिक स्तर · कक्षा 1–5'),
         ExamLevel.junior => _t('Junior level · Classes VI–VIII', 'उच्च प्राथमिक (जूनियर) स्तर · कक्षा 6–8'),

@@ -7,7 +7,7 @@ import '../widgets/brand.dart';
 import '../widgets/common.dart';
 import 'paper_detail_screen.dart';
 
-/// Official papers of the exam chosen in the header, by year, newest first. A
+/// Official papers of the exam chosen in the page's switch, by year, newest first. A
 /// year with several papers opens in place to list them by level.
 class PapersScreen extends StatelessWidget {
   const PapersScreen({super.key});
@@ -20,6 +20,7 @@ class PapersScreen extends StatelessWidget {
     return BrandPage(
       children: [
         SectionTitle(s.examPapers(app.exam)),
+        const ExamSwitch(),
         if (groups.isEmpty)
           EmptyState(icon: Icons.description_outlined, title: s.noPapers, message: s.noPapersHint)
         else

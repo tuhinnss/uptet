@@ -49,7 +49,7 @@ class PaperDetailScreen extends StatelessWidget {
     return Scaffold(
       body: Column(
         children: [
-          const BrandHeader(showExams: false),
+          const BrandHeader(),
           Expanded(
             child: AsyncLoader<_PaperData>(
               load: (app) async => _PaperData(

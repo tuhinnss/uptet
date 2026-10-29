@@ -22,7 +22,6 @@ class PracticeScreen extends StatelessWidget {
     final app = AppScope.of(context);
     // Papers without an exam and level are practice sets, not previous papers.
     final sets = app.content.papers.where((p) => p.exam == null || p.level == null).toList();
-    final subjects = app.content.subjectsFor(app.exam);
     return BrandPage(
       children: [
         SectionTitle(s.practiceAndRevision),
@@ -31,10 +30,10 @@ class PracticeScreen extends StatelessWidget {
           title: s.topicWiseQuestions,
           subtitle: s.topicWiseSubtitle,
           children: [
-            if (subjects.isEmpty)
-              Text(s.noExamSubjects, style: const TextStyle(color: Colors.white))
+            if (app.content.subjects.isEmpty)
+              Text(s.noSubjects, style: const TextStyle(color: Colors.white))
             else
-              for (final subject in subjects)
+              for (final subject in app.content.subjects)
                 InnerCard(
                   icon: subjectIcon(subject),
                   title: subject.name.resolve(app.language).text,

@@ -23,13 +23,11 @@ Git Bash's PATH is MSYS and makes a broken venv). Run them as `.venv/Scripts/pyt
 ## Layout
 
 - `lib/models/content.dart`: content pack model (subjects, topics, questions, papers) and JSON parsing.
-- `lib/models/content_index.dart`: lookups over the installed pack (`papersFor(exam, level)`, paper languages,
-  exam-scoped `subjectsFor(exam)` and `questionsForTopic(topic, exam:)`).
-- `lib/app_state.dart`: `AppController` holds the language and the exam chosen in the header switch
-  (`ExamSwitch` in `lib/widgets/brand.dart`; saved under the `exam` settings key). The Papers tab, topic
-  practice, subject pages and the Syllabus page show only the chosen exam's content; practice sets,
-  revision and progress history stay shared across exams. Hide the switch with `showExams: false` on
-  pages tied to one paper (paper detail, quiz).
+- `lib/models/content_index.dart`: lookups over the installed pack (`papersFor(exam, level)`, paper languages).
+- `lib/app_state.dart`: `AppController` holds the language and the chosen exam (saved under the `exam`
+  settings key). The exam switch (`ExamSwitch` in `lib/widgets/brand.dart`) appears only on the pages whose
+  content depends on the exam: Papers (lists that exam's papers) and Syllabus (shows its pattern). Keep it
+  out of the shared header; practice, subjects, revision and progress cover all exams.
 - `lib/database/app_database.dart`: schema as a list of append-only migrations. Never edit a shipped
   migration; add a new entry. `test/database/app_database_test.dart` upgrades v1 to current.
 - `lib/repositories/`: SQLite access. `content_repository.dart` installs the bundled pack.
@@ -50,8 +48,11 @@ Git Bash's PATH is MSYS and makes a broken venv). Run them as `.venv/Scripts/pyt
   A paper lists its own `question_ids`, so Junior papers share their common parts. A new exam needs a
   value in `Exam` (`lib/models/content.dart`), its name in `strings.dart` and a pattern on the Syllabus page.
 - Subjects with `language` (hin, eng, and san, which is asked in Hindi) hold questions in that language only.
-- A paper's booklet is bundled as `assets/pdfs/<paper id>.pdf` and named in its `pdf_asset`. For Super TET
-  2019 this is the clean retypeset Series A booklet; the scan in Drive has a candidate's pen marks.
+- A paper's booklet is bundled as `assets/pdfs/<paper id>.pdf`; the app finds it by that name even when
+  `pdf_asset` is null. For Super TET 2019 this is the clean retypeset Series A booklet (the scan in Drive has
+  a candidate's pen marks). The UPTET PDFs are cut from the YCT solved papers in Drive (folders 17, 18, 19,
+  21) to the question pages and the answer key page: never bundle YCT's explanation pages, which are the
+  publisher's own text (see `tool/pyq/README.md`).
 - Explanations are our own writing. Answers follow the source key; skip questions whose answer is
   wrong or ambiguous or that need a figure, and note disputed answers in the explanation.
 - Every imported question stays `verification_status: pending_review` until checked against the

@@ -49,7 +49,7 @@ class AppController extends ChangeNotifier {
   AppLanguage get language => _language ?? AppLanguage.hi;
   int get dataRevision => _dataRevision;
 
-  /// The exam chosen in the header: papers and topic practice show only its content.
+  /// The exam chosen on the Papers and Syllabus pages, which show only its papers and pattern.
   Exam get exam => _exam;
 
   Future<void> setExam(Exam exam) async {

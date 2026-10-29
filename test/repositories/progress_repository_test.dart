@@ -221,30 +221,23 @@ void main() {
     expect(updated.subject('s1')!.language, AppLanguage.hi);
   });
 
-  test('topic practice and subjects follow the chosen exam', () async {
+  test('Super TET papers are kept with their exam', () async {
     final json = samplePackJson(version: 'v2');
     final papers = json['papers'] as List;
-    papers
-      ..add({...papers.first as Map<String, Object?>, 'id': 'p2', 'exam': 'uptet', 'level': 'primary'})
-      ..add({
-        ...papers.first as Map<String, Object?>,
-        'id': 'p3',
-        'exam': 'supertet',
-        'level': 'primary',
-        'question_ids': ['q3'],
-        'question_count': 1,
-      });
+    papers.add({
+      ...papers.first as Map<String, Object?>,
+      'id': 'p3',
+      'exam': 'supertet',
+      'level': 'primary',
+      'question_ids': ['q3'],
+      'question_count': 1,
+    });
     final repo = ContentRepository(db);
     await repo.importPack(ContentPack.fromJson(json));
     final updated = await repo.loadIndex();
 
-    expect(updated.questionsForTopic('t1', exam: Exam.uptet).map((q) => q.id), ['q1', 'q2']);
-    expect(updated.questionsForTopic('t1', exam: Exam.supertet), isEmpty);
-    expect(updated.questionsForTopic('t2', exam: Exam.supertet).map((q) => q.id), ['q3']);
-    expect(updated.questionsForTopic('t2').map((q) => q.id), ['q3']);
-    expect(updated.questionCountForSubject('s1', exam: Exam.supertet), 1);
-    expect(updated.subjectsFor(Exam.ctet), isEmpty);
     expect(updated.paper('p3')!.exam, Exam.supertet);
+    expect(updated.papersFor(Exam.supertet, ExamLevel.primary).map((p) => p.id), ['p3']);
   });
 
   test('the chosen exam is remembered', () async {

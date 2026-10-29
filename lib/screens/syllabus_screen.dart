@@ -8,8 +8,8 @@ import '../widgets/brand.dart';
 import '../widgets/subject_icon.dart';
 import 'quiz_launcher.dart';
 
-/// The pattern of the exam chosen in the header, then the subjects and topics
-/// this app covers for it.
+/// The pattern of the exam chosen in the page's switch, then the subjects and
+/// topics this app covers.
 class SyllabusScreen extends StatelessWidget {
   const SyllabusScreen({super.key});
 
@@ -24,6 +24,7 @@ class SyllabusScreen extends StatelessWidget {
     return BrandPage(
       children: [
         SectionTitle(s.syllabus, back: true),
+        const ExamSwitch(),
         SectionTitle(s.examPattern(exam), size: 22),
         if (exam == Exam.supertet)
           _PatternCard(
@@ -76,15 +77,15 @@ class SyllabusScreen extends StatelessWidget {
         Text(s.patternNote, style: const TextStyle(color: Colors.white70, fontSize: 13, height: 1.4)),
         const SizedBox(height: 24),
         SectionTitle(s.topicsInApp, size: 22),
-        for (final subject in app.content.subjectsFor(exam))
+        for (final subject in app.content.subjects)
           ExpandableBrandCard(
             icon: subjectIcon(subject),
             title: subject.name.resolve(app.language).text,
-            subtitle: s.questionsCount(app.content.questionCountForSubject(subject.id, exam: exam)),
+            subtitle: s.questionsCount(app.content.questionCountForSubject(subject.id)),
             children: [
               for (final topic in app.content.topicsFor(subject.id))
                 Builder(builder: (context) {
-                  final count = app.content.questionsForTopic(topic.id, exam: exam).length;
+                  final count = app.content.questionsForTopic(topic.id).length;
                   return InnerCard(
                     title: topic.name.resolve(app.language).text,
                     subtitle: count > 0 ? s.questionsCount(count) : s.noTopicQuestions,
