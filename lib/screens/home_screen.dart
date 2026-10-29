@@ -107,7 +107,7 @@ class HomeScreen extends StatelessWidget {
                         ),
                         if (!app.content.releaseReady) ...[
                           const SizedBox(height: 4),
-                          NoticeBanner(icon: Icons.info_outline, text: s.pilotNotice),
+                          NoticeBanner(icon: Icons.info_outline, text: s.unverifiedNotice),
                         ],
                       ],
                     ),

@@ -51,8 +51,8 @@ class S {
   String get notVerified => _t('Not verified', 'असत्यापित');
   String get translationMissing => _t('English version not available — showing Hindi.',
       'हिन्दी संस्करण उपलब्ध नहीं — अंग्रेज़ी में दिखाया जा रहा है।');
-  String get pilotNotice => _t('Pilot version: questions marked "Not verified" are still awaiting review.',
-      'पायलट संस्करण: "असत्यापित" चिह्नित प्रश्नों की जाँच अभी बाकी है।');
+  String get unverifiedNotice => _t('Questions marked "Not verified" are still being checked against the official answer keys.',
+      '"असत्यापित" चिह्नित प्रश्नों का आधिकारिक उत्तरमाला से मिलान अभी बाकी है।');
   String get contentUpdateFailed => _t(
       'New study content could not be installed, so the previous content is being used.',
       'नई अध्ययन सामग्री इंस्टॉल नहीं हो सकी, इसलिए पिछली सामग्री का उपयोग हो रहा है।');
