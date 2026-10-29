@@ -21,6 +21,9 @@ class AppConfig {
   /// Questions answered in a day needed for each darker heat map shade.
   static const List<int> heatMapQuestionLevels = [10, 25, 50, 100];
 
+  /// Store page shared by "Share UPTET Saathi". It works once the app is published.
+  static const String playStoreUrl = 'https://play.google.com/store/apps/details?id=com.uptetsaathi.app';
+
   /// Google Form for pilot feedback (its "viewform" link). While empty, the
   /// feedback buttons are hidden. Can also be set at build time:
   /// `flutter build apk --dart-define=FEEDBACK_FORM_URL=https://docs.google.com/forms/d/e/.../viewform`

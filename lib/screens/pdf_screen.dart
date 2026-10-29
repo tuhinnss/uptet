@@ -13,7 +13,8 @@ class PdfScreen extends StatefulWidget {
   final String asset;
 
   static Future<void> open(BuildContext context, {required String title, required String asset}) =>
-      Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => PdfScreen(title: title, asset: asset)));
+      Navigator.of(context, rootNavigator: true)
+          .push(MaterialPageRoute<void>(builder: (_) => PdfScreen(title: title, asset: asset)));
 
   @override
   State<PdfScreen> createState() => _PdfScreenState();

@@ -3,10 +3,14 @@ import 'package:flutter/material.dart';
 import '../app_state.dart';
 import '../l10n/strings.dart';
 import '../models/attempt.dart';
+import '../models/content.dart';
+import 'common.dart';
 
-/// Asks how to take a paper: untimed practice or a timed mock test. Returns
-/// null when dismissed. The choice is saved as the default for the next paper.
-Future<TestSettings?> showTestSettingsSheet(BuildContext context, {required int fullMinutes}) async {
+/// Asks how to take a paper: untimed practice or a mock test. A mock test
+/// always runs like the real exam, with the paper's full time and marking.
+/// Returns null when dismissed. The choice is saved as the default for the next paper.
+Future<TestSettings?> showTestSettingsSheet(BuildContext context,
+    {required int fullMinutes, required MarkingScheme marking}) async {
   final app = AppScope.read(context);
   TestSettings initial;
   try {
@@ -20,7 +24,7 @@ Future<TestSettings?> showTestSettingsSheet(BuildContext context, {required int 
     context: context,
     showDragHandle: true,
     isScrollControlled: true,
-    builder: (_) => _TestSettingsSheet(initial: initial, fullMinutes: fullMinutes),
+    builder: (_) => _TestSettingsSheet(initial: initial, fullMinutes: fullMinutes, marking: marking),
   );
   if (chosen != null) {
     try {
@@ -34,26 +38,25 @@ Future<TestSettings?> showTestSettingsSheet(BuildContext context, {required int 
 }
 
 class _TestSettingsSheet extends StatefulWidget {
-  const _TestSettingsSheet({required this.initial, required this.fullMinutes});
+  const _TestSettingsSheet({required this.initial, required this.fullMinutes, required this.marking});
 
   final TestSettings initial;
   final int fullMinutes;
+  final MarkingScheme marking;
 
   @override
   State<_TestSettingsSheet> createState() => _TestSettingsSheetState();
 }
 
 class _TestSettingsSheetState extends State<_TestSettingsSheet> {
-  late TestSettings _settings = widget.initial;
+  // Time limits and negative marking chosen in earlier versions no longer apply.
+  late TestSettings _settings = widget.initial.copyWith(timeLimitMinutes: () => null, negativeMark: 0);
 
   @override
   Widget build(BuildContext context) {
     final s = S.of(context);
     final theme = Theme.of(context);
     final mock = _settings.mode == AttemptMode.mock;
-    final shorter = [for (final m in TestSettings.timeLimitChoices) if (m < widget.fullMinutes) m];
-    // A remembered limit longer than this paper's full time falls back to full time.
-    final limit = shorter.contains(_settings.timeLimitMinutes) ? _settings.timeLimitMinutes : null;
 
     return SafeArea(
       child: SingleChildScrollView(
@@ -74,40 +77,11 @@ class _TestSettingsSheetState extends State<_TestSettingsSheet> {
             const SizedBox(height: 8),
             Text(mock ? s.mockModeHint : s.practiceModeHint, style: theme.textTheme.bodySmall),
             if (mock) ...[
-              const SizedBox(height: 20),
-              Text(s.timeLimit, style: theme.textTheme.titleSmall),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  for (final minutes in [null, ...shorter])
-                    ChoiceChip(
-                      label: Text(minutes == null ? s.fullTime(widget.fullMinutes) : s.minutes(minutes)),
-                      selected: limit == minutes,
-                      onSelected: (_) => setState(() => _settings = _settings.copyWith(timeLimitMinutes: () => minutes)),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              Text(s.negativeMarking, style: theme.textTheme.titleSmall),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  for (final mark in TestSettings.negativeMarkChoices)
-                    ChoiceChip(
-                      label: Text(mark == 0 ? s.noNegativeMarking : '−${formatNumber(mark)}'),
-                      selected: (_settings.negativeMark - mark).abs() < 0.001,
-                      onSelected: (_) => setState(() => _settings = _settings.copyWith(negativeMark: mark)),
-                    ),
-                ],
-              ),
-              if (_settings.negativeMark > 0) ...[
-                const SizedBox(height: 4),
-                Text(s.perWrongAnswer(_settings.negativeMark), style: theme.textTheme.bodySmall),
-              ],
+              const SizedBox(height: 16),
+              Wrap(spacing: 8, runSpacing: 8, children: [
+                InfoChip(icon: Icons.timer_outlined, label: s.fullTime(widget.fullMinutes)),
+                InfoChip(icon: Icons.rule, label: s.marking(widget.marking)),
+              ]),
             ],
             const SizedBox(height: 12),
             SwitchListTile(
@@ -121,7 +95,7 @@ class _TestSettingsSheetState extends State<_TestSettingsSheet> {
               style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
               icon: const Icon(Icons.play_arrow),
               label: Text(s.startTest),
-              onPressed: () => Navigator.pop(context, _settings.copyWith(timeLimitMinutes: () => limit)),
+              onPressed: () => Navigator.pop(context, _settings),
             ),
           ],
         ),

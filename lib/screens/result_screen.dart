@@ -18,7 +18,8 @@ class ResultScreen extends StatefulWidget {
   final int attemptId;
   final bool justSubmitted;
 
-  static Future<void> open(BuildContext context, int attemptId) => Navigator.of(context).push(
+  static Future<void> open(BuildContext context, int attemptId) =>
+      Navigator.of(context, rootNavigator: true).push(
         MaterialPageRoute<void>(builder: (_) => ResultScreen(attemptId: attemptId)),
       );
 

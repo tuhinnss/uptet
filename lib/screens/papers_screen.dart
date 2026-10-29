@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import '../app_state.dart';
 import '../l10n/strings.dart';
 import '../models/content.dart';
+import '../widgets/brand.dart';
 import '../widgets/common.dart';
-import '../widgets/settings_sheet.dart';
 import 'paper_detail_screen.dart';
 
+/// Official papers grouped by exam and year, newest first. A year with
+/// several papers opens in place to list them by level.
 class PapersScreen extends StatelessWidget {
   const PapersScreen({super.key});
 
@@ -14,96 +16,81 @@ class PapersScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final s = S.of(context);
     final app = AppScope.of(context);
-    final content = app.content;
-    // Papers without an exam and level (practice sets) are listed last.
-    final practice = content.papers.where((p) => p.exam == null || p.level == null).toList();
-    return Scaffold(
-      appBar: AppBar(title: Text(s.previousPapers), actions: const [LanguageButton()]),
-      body: content.papers.isEmpty
-          ? EmptyState(icon: Icons.description_outlined, title: s.noPapers, message: s.noPapersHint)
-          : ListView(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-              children: [
-                for (final exam in Exam.values)
-                  if (content.papers.any((p) => p.exam == exam && p.level != null)) ...[
-                    SectionHeader(s.examPapers(exam)),
-                    for (final level in ExamLevel.values)
-                      if (content.papersFor(exam, level) case final papers when papers.isNotEmpty) ...[
-                        _LevelHeader(s.levelName(level)),
-                        for (final paper in papers) _PaperCard(paper: paper),
-                      ],
-                  ],
-                if (practice.isNotEmpty) ...[
-                  SectionHeader(s.practiceSets),
-                  for (final paper in practice) _PaperCard(paper: paper),
-                ],
-              ],
-            ),
-    );
-  }
-}
-
-class _LevelHeader extends StatelessWidget {
-  const _LevelHeader(this.text);
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 8, 4, 8),
-      child: Text(text, style: theme.textTheme.labelLarge?.copyWith(color: theme.colorScheme.primary)),
-    );
-  }
-}
-
-class _PaperCard extends StatelessWidget {
-  const _PaperCard({required this.paper});
-
-  final Paper paper;
-
-  @override
-  Widget build(BuildContext context) {
-    final s = S.of(context);
-    final app = AppScope.of(context);
-    final theme = Theme.of(context);
-    final languages = app.content.paperLanguages(paper.id);
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: () => Navigator.of(context).push(
-          MaterialPageRoute<void>(builder: (_) => PaperDetailScreen(paperId: paper.id)),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(paper.title.resolve(app.language).text, style: theme.textTheme.titleMedium),
-              const SizedBox(height: 8),
-              PaperBadge(paper: paper),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 6,
-                runSpacing: 6,
+    final groups = officialPaperGroups(app.content.papers);
+    return BrandPage(
+      children: [
+        SectionTitle(s.previousPapers),
+        if (groups.isEmpty)
+          EmptyState(icon: Icons.description_outlined, title: s.noPapers, message: s.noPapersHint)
+        else
+          for (final group in groups)
+            if (group.papers.length == 1)
+              BrandCard(
+                icon: const Icon(Icons.description_outlined),
+                title: group.title(s),
+                subtitle: paperLabel(s, app.language, group.papers.single),
+                onTap: () => PaperDetailScreen.open(context, group.papers.single.id),
+              )
+            else
+              ExpandableBrandCard(
+                icon: const Icon(Icons.description_outlined),
+                title: group.title(s),
+                subtitle: s.paperCount(group.papers.length),
                 children: [
-                  if (paper.year != null) InfoChip(icon: Icons.event, label: '${paper.year}'),
-                  if (paper.paperCode != null) InfoChip(icon: Icons.tag, label: paper.paperCode!),
-                  InfoChip(icon: Icons.quiz_outlined, label: s.questionsCount(app.content.questionsForPaper(paper.id).length)),
-                  if (languages.isNotEmpty)
-                    InfoChip(icon: Icons.translate, label: languages.map(s.languageName).join(' · ')),
-                  if (paper.durationMinutes != null)
-                    InfoChip(icon: Icons.timer_outlined, label: s.minutes(paper.durationMinutes!)),
+                  for (final paper in group.papers)
+                    InnerCard(
+                      icon: const Icon(Icons.description_outlined),
+                      title: s.levelWord(paper.level!),
+                      subtitle: [s.levelClasses(paper.level!), paperPart(paper, app.language)].nonNulls.join(' · '),
+                      singleLine: true,
+                      onTap: () => PaperDetailScreen.open(context, paper.id),
+                    ),
                 ],
               ),
-            ],
-          ),
-        ),
-      ),
+      ],
     );
   }
+}
+
+class PaperGroup {
+  const PaperGroup(this.exam, this.year, this.papers);
+
+  final Exam exam;
+  final int? year;
+  final List<Paper> papers;
+
+  String title(S s) => year == null ? s.examName(exam) : '${s.examName(exam)} $year';
+}
+
+/// Official papers by exam, then year (newest first); Primary before Junior within a year.
+List<PaperGroup> officialPaperGroups(List<Paper> papers) {
+  final groups = <(Exam, int?), List<Paper>>{};
+  for (final paper in papers) {
+    if (paper.exam == null || paper.level == null) continue;
+    groups.putIfAbsent((paper.exam!, paper.year), () => []).add(paper);
+  }
+  final keys = groups.keys.toList()
+    ..sort((a, b) => a.$1 != b.$1 ? a.$1.index.compareTo(b.$1.index) : (b.$2 ?? 0).compareTo(a.$2 ?? 0));
+  return [
+    for (final key in keys)
+      PaperGroup(key.$1, key.$2, groups[key]!..sort((a, b) => a.level!.index.compareTo(b.level!.index))),
+  ];
+}
+
+/// What tells papers of one year apart: the part of the title after exam and
+/// level, such as "Social Studies".
+String? paperPart(Paper paper, AppLanguage language) {
+  final parts = paper.title.resolve(language).text.split(' · ');
+  return parts.length > 2 ? parts.sublist(2).join(' · ') : null;
+}
+
+/// Level, and the distinguishing part when there is one.
+String paperLabel(S s, AppLanguage language, Paper paper) {
+  final part = paperPart(paper, language);
+  return [
+    if (paper.level != null) s.levelShort(paper.level!),
+    if (part != null) part,
+  ].join(' · ');
 }
 
 /// Makes clear whether a paper is a checked official paper or a practice set.

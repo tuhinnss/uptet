@@ -54,6 +54,16 @@ Future<AppController> bootstrap({
     warning = e.toString();
   }
 
+  Set<String> pdfs;
+  try {
+    final manifest = await AssetManifest.loadFromAssetBundle(bundle ?? rootBundle);
+    pdfs = {for (final a in manifest.listAssets()) if (a.startsWith('assets/pdfs/')) a};
+  } catch (e) {
+    // Only the booklets named in the content pack are offered.
+    debugPrint('Could not list bundled PDFs: $e');
+    pdfs = const {};
+  }
+
   final settings = SettingsRepository(db);
   return AppController(
     content: await contentRepository.loadIndex(),
@@ -61,5 +71,6 @@ Future<AppController> bootstrap({
     settings: settings,
     language: await settings.language(),
     contentWarning: warning,
+    bundledPdfs: pdfs,
   );
 }

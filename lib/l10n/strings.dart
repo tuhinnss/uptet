@@ -58,7 +58,7 @@ class S {
       'नई अध्ययन सामग्री इंस्टॉल नहीं हो सकी, इसलिए पिछली सामग्री का उपयोग हो रहा है।');
 
   // Home
-  String get welcomeTitle => _t('Namaste!', 'नमस्ते!');
+  String get welcomeTitle => _t('Namaskar,', 'नमस्कार,');
   String get welcomeMessage => _t('Even a few minutes of practice today moves your preparation forward.',
       'आज कुछ मिनट का अभ्यास भी आपकी तैयारी को आगे बढ़ाता है।');
   String get continueWhereLeft => _t('Continue where you left off', 'जहाँ छोड़ा था, वहीं से जारी रखें');
@@ -74,7 +74,13 @@ class S {
   String get reviseNow => _t('Revise now', 'अभी दोहराएँ');
   String get startStudying => _t('Start studying', 'पढ़ाई शुरू करें');
   String get papersSubtitle => _t('Attempt a full paper', 'पूरा प्रश्नपत्र हल करें');
-  String get practiceSubtitle => _t('Topic-wise practice and revision', 'विषयवार अभ्यास और पुनरावृत्ति');
+  String get practiceSubtitle => _t('Topic-wise practice', 'विषयवार अभ्यास');
+  String get syllabus => _t('Syllabus', 'पाठ्यक्रम');
+  String get syllabusSubtitle => _t('Exam pattern & syllabus', 'परीक्षा पैटर्न और पाठ्यक्रम');
+  String get aboutUs => _t('About Us', 'हमारे बारे में');
+  String get bannerDescription => _t(
+      'Busy day? Keep learning. UPTET Saathi makes revision and question practice easy for working teachers and UPTET candidates.',
+      'व्यस्त दिन? सीखना जारी रखें। UPTET साथी कामकाजी शिक्षकों और UPTET अभ्यर्थियों के लिए दोहराई और प्रश्नों का अभ्यास आसान बनाता है।');
   String get progressSubtitle => _t('Scores, accuracy and weak topics', 'अंक, सटीकता और कमज़ोर विषय');
 
   // Papers
@@ -108,8 +114,6 @@ class S {
     return _t('+$correct per correct answer, $wrong per wrong answer', 'हर सही उत्तर पर +$correct, हर गलत उत्तर पर $wrong');
   }
 
-  String get sourceLabel => _t('Source', 'स्रोत');
-  String get noPdf => _t('No PDF is included for this paper.', 'इस प्रश्नपत्र के साथ कोई PDF शामिल नहीं है।');
   String get viewPdf => _t('View the original paper (PDF)', 'मूल प्रश्नपत्र देखें (PDF)');
   String get pdfFailed => _t('The PDF could not be opened.', 'PDF नहीं खुल सका।');
   String pageXofY(int x, int y) => _t('Page $x of $y', 'पृष्ठ $x / $y');
@@ -130,12 +134,7 @@ class S {
   String get mockModeHint => _t(
       'Timed like the real exam. The test is submitted automatically when time runs out. The timer pauses while you are away from the test.',
       'असली परीक्षा की तरह समयबद्ध। समय समाप्त होने पर टेस्ट अपने आप जमा हो जाता है। टेस्ट से बाहर रहने पर टाइमर रुका रहता है।');
-  String get timeLimit => _t('Time limit', 'समय सीमा');
   String fullTime(int minutes) => _t('Full time · $minutes min', 'पूरा समय · $minutes मिनट');
-  String get negativeMarking => _t('Negative marking', 'ऋणात्मक अंकन');
-  String get noNegativeMarking => _t('None', 'नहीं');
-  String perWrongAnswer(double mark) =>
-      _t('−${formatNumber(mark)} per wrong answer', 'हर गलत उत्तर पर −${formatNumber(mark)}');
   String get shuffleQuestions => _t('Shuffle question order', 'प्रश्नों का क्रम बदलें');
   String get timeLeft => _t('Time left', 'शेष समय');
   String get timeUp => _t('Time is up. Your test has been submitted.', 'समय समाप्त। आपका टेस्ट जमा कर दिया गया है।');
@@ -255,6 +254,124 @@ class S {
           'कोई खाता नहीं है और UPTET साथी का कोई सर्वर नहीं है, इसलिए आपका डेटा हमारे पास नहीं आता। '
           'ऐप हटाने (अनइंस्टॉल) या फ़ोन खो जाने पर आपकी प्रगति शायद वापस न मिल सके। '
           'सुझाव भेजने पर केवल फ़ॉर्म में लिखी आपकी बात और बताए गए प्रश्न की ID ही हम तक पहुँचती है।');
+
+  // Papers list
+  String paperCount(int n) => _t(n == 1 ? '1 paper' : '$n papers', '$n प्रश्नपत्र');
+  String examName(Exam exam) => switch (exam) {
+        Exam.uptet => 'UPTET',
+        Exam.ctet => 'CTET',
+      };
+  String levelShort(ExamLevel level) => switch (level) {
+        ExamLevel.primary => _t('Primary (Classes 1 to 5)', 'प्राथमिक (कक्षा 1 से 5)'),
+        ExamLevel.junior => _t('Junior (Classes 6 to 8)', 'जूनियर (कक्षा 6 से 8)'),
+      };
+  String levelWord(ExamLevel level) => switch (level) {
+        ExamLevel.primary => _t('Primary', 'प्राथमिक'),
+        ExamLevel.junior => _t('Junior', 'जूनियर'),
+      };
+  String levelClasses(ExamLevel level) => switch (level) {
+        ExamLevel.primary => _t('Classes 1–5', 'कक्षा 1–5'),
+        ExamLevel.junior => _t('Classes 6–8', 'कक्षा 6–8'),
+      };
+  String get shareApp => _t('Share UPTET Saathi', 'UPTET साथी शेयर करें');
+  String get shareAppSubtitle => _t('Invite friends preparing for UPTET', 'UPTET की तैयारी कर रहे साथियों को बुलाएँ');
+  String shareMessage(String link) => _t(
+      'Preparing for UPTET? Try UPTET Saathi: previous papers, topic-wise practice and revision in Hindi and English, even offline. $link',
+      'UPTET की तैयारी कर रहे हैं? UPTET साथी आज़माएँ: पिछले प्रश्नपत्र, विषयवार अभ्यास और दोहराई, हिन्दी और अंग्रेज़ी में, बिना इंटरनेट के भी। $link');
+  String get shareFailed => _t('Sharing could not be opened.', 'शेयर नहीं खुल सका।');
+  String get downloadPaper => _t('Download Paper', 'प्रश्नपत्र डाउनलोड करें');
+  String savedToDownloads(String name) => _t('Saved to Downloads: $name', 'डाउनलोड्स में सहेजा गया: $name');
+  String get downloadFailed =>
+      _t('The paper could not be saved. Please try again.', 'प्रश्नपत्र सहेजा नहीं जा सका। कृपया फिर से प्रयास करें।');
+  String get storagePermissionNeeded => _t('Allow storage access to save the paper, then try again.',
+      'प्रश्नपत्र सहेजने के लिए स्टोरेज की अनुमति दें, फिर से प्रयास करें।');
+  String get openFullScreen => _t('Open full screen', 'पूरी स्क्रीन पर खोलें');
+
+  // Practice
+  String get topicWiseQuestions => _t('Topic-wise questions', 'प्रकरणवार प्रश्न');
+  String get topicWiseSubtitle => _t('Practise by subject and topic', 'विषय और प्रकरण के अनुसार अभ्यास');
+  String get subjectWiseQuestions => _t('Subject-wise questions', 'विषयवार प्रश्न');
+  String get fullPracticeSet => _t('Full Practice Set', 'पूर्ण अभ्यास सेट');
+  String get fullPracticeSubtitle => _t('Attempt a complete set', 'पूरा सेट हल करें');
+  String get subjectPapersSubtitle => _t('Full papers with this subject', 'इस विषय वाले पूरे प्रश्नपत्र');
+  String get noPracticeSets => _t('No practice sets are available yet.', 'अभी कोई अभ्यास सेट उपलब्ध नहीं है।');
+  String get reviseMistakes => _t('Revise mistakes', 'गलतियाँ दोहराएँ');
+  String get noTopicsYet => _t('No topics are available yet.', 'अभी कोई प्रकरण उपलब्ध नहीं है।');
+
+  // Question screen
+  String get skip => _t('Skip ›››', 'छोड़ें ›››');
+  String get nextArrows => _t('Next ›››', 'अगला ›››');
+  String get noExplanation =>
+      _t('No explanation is available for this question yet.', 'इस प्रश्न की व्याख्या अभी उपलब्ध नहीं है।');
+
+  // Progress page
+  String outOf(int n) => _t('Out of $n', '$n में से');
+  String get papersCompletedLabel => _t('Papers completed', 'पूरे किए गए प्रश्नपत्र');
+  String get weeklyTime => _t('Time this week', 'इस सप्ताह का समय');
+  String get questionReport => _t('Question report', 'प्रश्न रिपोर्ट');
+  String dayStreak(int n) => _t(n == 1 ? '1-day streak' : '$n-day streak', 'लगातार $n दिन');
+  String bestStreak(int n) => _t(n == 1 ? 'Best: 1 day' : 'Best: $n days', 'सर्वश्रेष्ठ: $n दिन');
+  String get startStreak =>
+      _t('Answer a question today to start your streak.', 'लगातार पढ़ाई शुरू करने के लिए आज एक प्रश्न हल करें।');
+  String get keepStreak => _t('Study today to keep your streak going.', 'लगातार पढ़ाई बनाए रखने के लिए आज भी अभ्यास करें।');
+  String get chooseMonth => _t('Choose month', 'महीना चुनें');
+  String get less => _t('Less', 'कम');
+  String get more => _t('More', 'ज़्यादा');
+
+  /// Row labels of the heat map, Monday first; only every other day is named.
+  List<String> get weekdayLabels =>
+      lang == AppLanguage.hi ? const ['सोम', '', 'बुध', '', 'शुक्र', '', ''] : const ['Mon', '', 'Wed', '', 'Fri', '', ''];
+  String monthShort(int month) => (lang == AppLanguage.hi
+      ? const ['जन', 'फ़र', 'मार्च', 'अप्रै', 'मई', 'जून', 'जुला', 'अग', 'सित', 'अक्टू', 'नव', 'दिस']
+      : const ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'])[month - 1];
+  String dayActivity(String date, int questions, String time) =>
+      _t('$date: $questions questions, $time', '$date: $questions प्रश्न, $time');
+
+  /// `45m`, `2h 30m`, or `14h` from ten hours up.
+  String studyTime(Duration d) {
+    final h = d.inHours, m = d.inMinutes.remainder(60);
+    if (h == 0) return _t('${m}m', '$m मि');
+    if (h >= 10 || m == 0) return _t('${h}h', '$h घं');
+    return _t('${h}h ${m}m', '$h घं $m मि');
+  }
+
+  // Syllabus
+  String get examPattern => _t('UPTET exam pattern', 'UPTET परीक्षा पैटर्न');
+  String get paperOne => _t('Paper I · Primary (Classes 1 to 5)', 'प्रश्नपत्र I · प्राथमिक (कक्षा 1 से 5)');
+  String get paperTwo => _t('Paper II · Junior (Classes 6 to 8)', 'प्रश्नपत्र II · जूनियर (कक्षा 6 से 8)');
+  String get sectionCdp => _t('Child Development & Pedagogy', 'बाल विकास एवं शिक्षण विधि');
+  String get sectionLanguageOne => _t('Language I (Hindi)', 'भाषा I (हिन्दी)');
+  String get sectionLanguageTwo => _t('Language II (English, Urdu or Sanskrit)', 'भाषा II (अंग्रेज़ी, उर्दू या संस्कृत)');
+  String get sectionMaths => _t('Mathematics', 'गणित');
+  String get sectionEvs => _t('Environmental Studies', 'पर्यावरण अध्ययन');
+  String get sectionMathsScienceOrSst => _t('Maths & Science, or Social Studies', 'गणित एवं विज्ञान, या सामाजिक अध्ययन');
+  String questionsShort(int n) => _t('$n Q', '$n प्रश्न');
+  String get patternTotals => _t('150 questions · 150 marks · 2½ hours', '150 प्रश्न · 150 अंक · 2½ घंटे');
+  String get patternRules => _t(
+      'Every question carries one mark and there is no negative marking. '
+          'To qualify you need 60% (90 marks) in the general category and 55% in reserved categories.',
+      'हर प्रश्न एक अंक का है और कोई ऋणात्मक अंकन नहीं है। '
+          'उत्तीर्ण होने के लिए सामान्य वर्ग में 60% (90 अंक) और आरक्षित वर्गों में 55% अंक चाहिए।');
+  String get patternNote =>
+      _t('The pattern can change. Always check the latest official notification.', 'पैटर्न बदल सकता है। हमेशा नवीनतम आधिकारिक अधिसूचना देखें।');
+  String get topicsInApp => _t('Topics you can practise here', 'यहाँ अभ्यास के लिए उपलब्ध प्रकरण');
+
+  // About
+  String get aboutBody => _t(
+      'We are a team driven by the belief that quality education and the right guidance can help everyone achieve their dreams. '
+          'We created UPTET Saathi to make exam preparation simpler, more accessible, and less stressful for aspiring teachers. '
+          "We understand that managing studies alongside work and daily responsibilities isn't easy, "
+          'so we wanted to build something that fits into everyday life.\n\n'
+          'Our goal is to make learning more convenient through practice, revision, and accessible study resources in Hindi and English.\n\n'
+          'We are continuously working to make UPTET Saathi a helpful companion for every aspirant on their journey to becoming a teacher.',
+      'हम एक ऐसी टीम हैं जिसका विश्वास है कि अच्छी शिक्षा और सही मार्गदर्शन से हर कोई अपने सपने पूरे कर सकता है। '
+          'हमने UPTET साथी इसलिए बनाया ताकि शिक्षक बनने की तैयारी कर रहे लोगों के लिए परीक्षा की तैयारी आसान, सुलभ और कम तनाव वाली हो। '
+          'हम समझते हैं कि काम और रोज़ की ज़िम्मेदारियों के साथ पढ़ाई करना आसान नहीं है, '
+          'इसलिए हम कुछ ऐसा बनाना चाहते थे जो रोज़मर्रा की ज़िंदगी में फिट हो जाए।\n\n'
+          'हमारा लक्ष्य है अभ्यास, दोहराई और हिन्दी व अंग्रेज़ी में सुलभ अध्ययन सामग्री के ज़रिए पढ़ाई को और सुविधाजनक बनाना।\n\n'
+          'हम UPTET साथी को शिक्षक बनने की यात्रा में हर अभ्यर्थी का मददगार साथी बनाने के लिए लगातार काम कर रहे हैं।');
+  static const aboutTagline = 'UPTET Saathi — आपकी तैयारी, हमारा साथ।';
+  String get teamPhoto => _t('The UPTET Saathi team', 'UPTET साथी की टीम');
 }
 
 /// `2` for whole numbers, `0.25` otherwise.

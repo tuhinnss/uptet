@@ -4,19 +4,14 @@ import '../app.dart';
 import '../app_state.dart';
 import '../l10n/strings.dart';
 import '../models/attempt.dart';
-import '../repositories/progress_repository.dart';
+import '../services/share_app.dart';
+import '../theme.dart';
 import '../widgets/async_loader.dart';
+import '../widgets/brand.dart';
 import '../widgets/common.dart';
 import '../widgets/settings_sheet.dart';
 import 'quiz_screen.dart';
-import 'review_screen.dart';
-
-class _HomeData {
-  const _HomeData(this.resume, this.revision);
-
-  final Attempt? resume;
-  final RevisionOverview revision;
-}
+import 'syllabus_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key, required this.onNavigate});
@@ -27,51 +22,119 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final s = S.of(context);
     final app = AppScope.of(context);
-    final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(s.appName), actions: const [LanguageButton()]),
-      body: AsyncLoader<_HomeData>(
-        load: (app) async => _HomeData(await app.progress.latestInProgress(), await app.progress.revisionOverview()),
-        builder: (context, data) => ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            Text(s.welcomeTitle, style: theme.textTheme.headlineSmall),
-            const SizedBox(height: 4),
-            Text(s.welcomeMessage, style: theme.textTheme.bodyLarge),
-            if (app.contentWarning != null) ...[
-              const SizedBox(height: 16),
-              NoticeBanner(icon: Icons.warning_amber, text: s.contentUpdateFailed),
-            ],
-            if (!app.content.releaseReady) ...[
-              const SizedBox(height: 16),
-              NoticeBanner(icon: Icons.info_outline, text: s.pilotNotice),
-            ],
-            if (data.resume case final attempt?) ...[
-              const SizedBox(height: 16),
-              _ResumeCard(attempt: attempt),
-            ],
-            const SizedBox(height: 16),
-            _RevisionCard(overview: data.revision),
-            SectionHeader(s.startStudying),
-            _NavCard(
-              icon: Icons.description_outlined,
-              title: s.previousPapers,
-              subtitle: s.papersSubtitle,
-              onTap: () => onNavigate(MainTab.papers),
+      body: Column(
+        children: [
+          const BrandHeader(),
+          Expanded(
+            child: AsyncLoader<_Resume>(
+              load: (app) async => _Resume(await app.progress.latestInProgress()),
+              builder: (context, data) => ListView(
+                padding: const EdgeInsets.only(bottom: 24),
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 16, 16, 12),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(s.welcomeTitle,
+                              style: const TextStyle(color: Colors.white, fontSize: 30, fontWeight: FontWeight.w700)),
+                        ),
+                        const _LanguagePill(),
+                      ],
+                    ),
+                  ),
+                  Semantics(
+                    label: s.bannerDescription,
+                    image: true,
+                    child: Image.asset(BrandAssets.banner, width: double.infinity, fit: BoxFit.fitWidth),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        if (app.contentWarning != null) ...[
+                          NoticeBanner(icon: Icons.warning_amber, text: s.contentUpdateFailed),
+                          const SizedBox(height: 16),
+                        ],
+                        if (data.attempt case final attempt?) ...[
+                          _ResumeCard(attempt: attempt),
+                          const SizedBox(height: 8),
+                        ],
+                        SectionTitle(s.startStudying),
+                        BrandCard(
+                          icon: const Icon(Icons.description_outlined),
+                          title: s.previousPapers,
+                          subtitle: s.papersSubtitle,
+                          onTap: () => onNavigate(MainTab.papers),
+                        ),
+                        BrandCard(
+                          icon: const Icon(Icons.draw_outlined),
+                          title: s.practiceAndRevision,
+                          subtitle: s.practiceSubtitle,
+                          onTap: () => onNavigate(MainTab.practice),
+                        ),
+                        BrandCard(
+                          icon: const Icon(Icons.bar_chart),
+                          title: s.syllabus,
+                          subtitle: s.syllabusSubtitle,
+                          onTap: () => SyllabusScreen.open(context),
+                        ),
+                        BrandCard(
+                          icon: const Icon(Icons.share_outlined),
+                          title: s.shareApp,
+                          subtitle: s.shareAppSubtitle,
+                          onTap: () => shareApp(context),
+                        ),
+                        if (!app.content.releaseReady) ...[
+                          const SizedBox(height: 4),
+                          NoticeBanner(icon: Icons.info_outline, text: s.pilotNotice),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-            _NavCard(
-              icon: Icons.edit_note_outlined,
-              title: s.practiceAndRevision,
-              subtitle: s.practiceSubtitle,
-              onTap: () => onNavigate(MainTab.practice),
-            ),
-            _NavCard(
-              icon: Icons.insights_outlined,
-              title: s.myProgress,
-              subtitle: s.progressSubtitle,
-              onTap: () => onNavigate(MainTab.progress),
-            ),
-          ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Resume {
+  const _Resume(this.attempt);
+
+  final Attempt? attempt;
+}
+
+/// Current language with a translate icon; opens the settings sheet.
+class _LanguagePill extends StatelessWidget {
+  const _LanguagePill();
+
+  @override
+  Widget build(BuildContext context) {
+    final s = S.of(context);
+    final app = AppScope.of(context);
+    return Material(
+      color: AppColors.sage,
+      borderRadius: BorderRadius.circular(4),
+      child: InkWell(
+        onTap: () => showSettingsSheet(context),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.translate, color: Colors.white, size: 24),
+              const SizedBox(width: 4),
+              Text(s.languageName(app.language),
+                  style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700)),
+              const Icon(Icons.arrow_downward, color: Colors.white, size: 22),
+            ],
+          ),
         ),
       ),
     );
@@ -86,89 +149,28 @@ class _ResumeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final s = S.of(context);
-    final theme = Theme.of(context);
-    return Card(
-      color: theme.colorScheme.primaryContainer,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(s.continueWhereLeft, style: theme.textTheme.labelLarge),
-            const SizedBox(height: 6),
-            Text(attemptTitle(context, attempt), style: theme.textTheme.titleMedium),
-            Text(s.questionXofY(attempt.currentIndex + 1, attempt.totalQuestions)),
-            const SizedBox(height: 12),
-            FilledButton.icon(
-              onPressed: () => QuizScreen.open(context, attempt.id),
-              icon: const Icon(Icons.play_arrow),
-              label: Text(s.resume),
-            ),
-          ],
-        ),
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(color: AppColors.mint, borderRadius: BorderRadius.circular(24)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(s.continueWhereLeft,
+              style: const TextStyle(color: AppColors.accentTeal, fontSize: 14, fontWeight: FontWeight.w600)),
+          const SizedBox(height: 4),
+          Text(attemptTitle(context, attempt),
+              style: const TextStyle(color: AppColors.deepTeal, fontSize: 18, fontWeight: FontWeight.w700)),
+          Text(s.questionXofY(attempt.currentIndex + 1, attempt.totalQuestions),
+              style: const TextStyle(color: AppColors.deepTeal)),
+          const SizedBox(height: 12),
+          FilledButton.icon(
+            style: FilledButton.styleFrom(backgroundColor: AppColors.teal, foregroundColor: Colors.white),
+            onPressed: () => QuizScreen.open(context, attempt.id),
+            icon: const Icon(Icons.play_arrow),
+            label: Text(s.resume),
+          ),
+        ],
       ),
     );
   }
-}
-
-class _RevisionCard extends StatelessWidget {
-  const _RevisionCard({required this.overview});
-
-  final RevisionOverview overview;
-
-  @override
-  Widget build(BuildContext context) {
-    final s = S.of(context);
-    final theme = Theme.of(context);
-    final nextDue = overview.nextDueAt;
-    final String message;
-    if (overview.due > 0) {
-      message = s.dueTodayCount(overview.due);
-    } else if (nextDue != null) {
-      message = '${s.noneDueToday} ${s.nextReviewOn(formatDate(context, nextDue))}';
-    } else {
-      message = s.revisionEmptyHint;
-    }
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(children: [
-              const Icon(Icons.replay),
-              const SizedBox(width: 8),
-              Text(s.revision, style: theme.textTheme.titleMedium),
-            ]),
-            const SizedBox(height: 8),
-            Text(message),
-            if (overview.due > 0) ...[
-              const SizedBox(height: 12),
-              FilledButton(onPressed: () => ReviewScreen.open(context), child: Text(s.reviseNow)),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _NavCard extends StatelessWidget {
-  const _NavCard({required this.icon, required this.title, required this.subtitle, required this.onTap});
-
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) => Card(
-        child: ListTile(
-          leading: Icon(icon),
-          title: Text(title),
-          subtitle: Text(subtitle),
-          trailing: const Icon(Icons.chevron_right),
-          onTap: onTap,
-        ),
-      );
 }

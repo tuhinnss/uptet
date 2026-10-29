@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../app_state.dart';
 import '../l10n/strings.dart';
 import '../models/content.dart';
+import '../theme.dart';
 import 'common.dart';
 import 'option_tile.dart';
 
@@ -18,6 +19,7 @@ class QuestionView extends StatelessWidget {
     this.onSelect,
     this.correctOptionId,
     this.showExplanation = false,
+    this.inlineHeading = false,
   });
 
   final Question question;
@@ -26,6 +28,9 @@ class QuestionView extends StatelessWidget {
   final ValueChanged<String>? onSelect;
   final String? correctOptionId;
   final bool showExplanation;
+
+  /// A short heading such as "Q21" set beside the question, as on the test screen.
+  final bool inlineHeading;
 
   @override
   Widget build(BuildContext context) {
@@ -41,25 +46,39 @@ class QuestionView extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: [
-            Text(heading, style: theme.textTheme.labelLarge?.copyWith(color: theme.colorScheme.primary)),
-            if (question.verificationStatus != VerificationStatus.verified)
-              InfoChip(icon: Icons.pending_outlined, label: s.notVerified),
-          ],
-        ),
+        if (!inlineHeading || question.verificationStatus != VerificationStatus.verified)
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              if (!inlineHeading) Text(heading, style: theme.textTheme.labelLarge?.copyWith(color: theme.colorScheme.primary)),
+              if (question.verificationStatus != VerificationStatus.verified)
+                InfoChip(icon: Icons.pending_outlined, label: s.notVerified),
+            ],
+          ),
         if (missingTranslation) ...[
           const SizedBox(height: 8),
           NoticeBanner(icon: Icons.translate, text: s.translationMissing),
         ],
         const SizedBox(height: 12),
-        Text(
-          question.text.resolve(language).text,
-          style: theme.textTheme.titleMedium?.copyWith(height: 1.5),
-        ),
+        if (inlineHeading)
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(heading, style: const TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.w700)),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(question.text.resolve(language).text,
+                    style: const TextStyle(color: Colors.white, fontSize: 22, height: 1.45)),
+              ),
+            ],
+          )
+        else
+          Text(
+            question.text.resolve(language).text,
+            style: theme.textTheme.titleMedium?.copyWith(height: 1.5),
+          ),
         const SizedBox(height: 16),
         for (final option in question.options) ...[
           OptionTile(
@@ -75,7 +94,7 @@ class QuestionView extends StatelessWidget {
                         : OptionReveal.neutral,
             onTap: onSelect == null ? null : () => onSelect!(option.id),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
         ],
         if (revealed && selectedOptionId == null)
           Padding(
@@ -86,20 +105,19 @@ class QuestionView extends StatelessWidget {
           Container(
             margin: const EdgeInsets.only(top: 4),
             padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(12),
-            ),
+            decoration: BoxDecoration(color: AppColors.mint, borderRadius: BorderRadius.circular(16)),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(children: [
-                  const Icon(Icons.lightbulb_outline, size: 18),
+                  const Icon(Icons.lightbulb_outline, size: 20, color: AppColors.deepTeal),
                   const SizedBox(width: 6),
-                  Text(s.explanation, style: theme.textTheme.labelLarge),
+                  Text(s.explanation,
+                      style: const TextStyle(color: AppColors.deepTeal, fontSize: 16, fontWeight: FontWeight.w700)),
                 ]),
                 const SizedBox(height: 6),
-                Text(question.explanation.resolve(language).text, style: theme.textTheme.bodyMedium?.copyWith(height: 1.5)),
+                Text(question.explanation.resolve(language).text,
+                    style: const TextStyle(color: Colors.black87, fontSize: 16, height: 1.5)),
               ],
             ),
           ),

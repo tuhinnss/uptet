@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'app_state.dart';
@@ -8,14 +9,8 @@ import 'screens/language_choice_screen.dart';
 import 'screens/papers_screen.dart';
 import 'screens/practice_screen.dart';
 import 'screens/progress_screen.dart';
-
-ThemeData buildTheme(Brightness brightness) {
-  final scheme = ColorScheme.fromSeed(seedColor: const Color(0xFF1F6F5C), brightness: brightness);
-  return ThemeData(
-    colorScheme: scheme,
-    appBarTheme: const AppBarTheme(centerTitle: false),
-  );
-}
+import 'theme.dart';
+import 'widgets/brand.dart';
 
 /// Starts the app: shows a splash while [boot] runs, then the main UI, or a
 /// bilingual error screen when no study content can be loaded.
@@ -42,14 +37,13 @@ class _UptetSaathiAppState extends State<UptetSaathiApp> {
         }
         return MaterialApp(
           debugShowCheckedModeBanner: false,
-          theme: buildTheme(Brightness.light),
-          darkTheme: buildTheme(Brightness.dark),
+          theme: buildTheme(),
           home: snapshot.hasError
               ? _StartupError(
                   error: snapshot.error!,
                   onRetry: () => setState(() => _boot = widget.boot()),
                 )
-              : const Scaffold(body: Center(child: CircularProgressIndicator())),
+              : const _Splash(),
         );
       },
     );
@@ -65,14 +59,29 @@ class _LoadedApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       onGenerateTitle: (context) => S.of(context).appName,
-      theme: buildTheme(Brightness.light),
-      darkTheme: buildTheme(Brightness.dark),
+      theme: buildTheme(),
       locale: Locale(app.language.name),
       supportedLocales: const [Locale('hi'), Locale('en')],
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
       home: app.hasChosenLanguage ? const HomeShell() : const LanguageChoiceScreen(),
     );
   }
+}
+
+/// Same mint and logo as the Android launch screen, so start-up looks continuous.
+class _Splash extends StatelessWidget {
+  const _Splash();
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        backgroundColor: AppColors.mint,
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: Image.asset(BrandAssets.logo, width: 320),
+          ),
+        ),
+      );
 }
 
 class _StartupError extends StatelessWidget {
@@ -109,8 +118,9 @@ class _StartupError extends StatelessWidget {
 
 enum MainTab { home, papers, practice, progress }
 
-/// The four main sections behind a persistent bottom navigation bar. Tabs
-/// stay alive so switching keeps scroll position and loaded data.
+/// The four main sections behind a persistent bottom bar. Each tab keeps its
+/// own page stack, so a paper or subject opens with the bar still visible.
+/// Tests, results and reviews open full screen above the bar.
 class HomeShell extends StatefulWidget {
   const HomeShell({super.key});
 
@@ -120,34 +130,64 @@ class HomeShell extends StatefulWidget {
 
 class _HomeShellState extends State<HomeShell> {
   MainTab _tab = MainTab.home;
+  final _navigators = {for (final tab in MainTab.values) tab: GlobalKey<NavigatorState>()};
 
-  void _goTo(MainTab tab) => setState(() => _tab = tab);
+  /// Tapping the open tab again goes back to its first page.
+  void _goTo(MainTab tab) {
+    if (tab == _tab) {
+      _navigators[tab]!.currentState?.popUntil((route) => route.isFirst);
+    } else {
+      setState(() => _tab = tab);
+    }
+  }
+
+  /// Back closes the open tab's pages first, then returns to Home, then leaves the app.
+  Future<void> _back() async {
+    if (await _navigators[_tab]!.currentState!.maybePop()) return;
+    if (_tab != MainTab.home) {
+      setState(() => _tab = MainTab.home);
+    } else {
+      await SystemNavigator.pop();
+    }
+  }
+
+  Widget _root(MainTab tab) => switch (tab) {
+        MainTab.home => HomeScreen(onNavigate: _goTo),
+        MainTab.papers => const PapersScreen(),
+        MainTab.practice => const PracticeScreen(),
+        MainTab.progress => const ProgressScreen(),
+      };
 
   @override
   Widget build(BuildContext context) {
     final s = S.of(context);
-    return Scaffold(
-      body: IndexedStack(
-        index: _tab.index,
-        children: [
-          HomeScreen(onNavigate: _goTo),
-          const PapersScreen(),
-          const PracticeScreen(),
-          const ProgressScreen(),
-        ],
-      ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _tab.index,
-        onDestinationSelected: (i) => _goTo(MainTab.values[i]),
-        destinations: [
-          NavigationDestination(icon: const Icon(Icons.home_outlined), selectedIcon: const Icon(Icons.home), label: s.navHome),
-          NavigationDestination(
-              icon: const Icon(Icons.description_outlined), selectedIcon: const Icon(Icons.description), label: s.navPapers),
-          NavigationDestination(
-              icon: const Icon(Icons.edit_note_outlined), selectedIcon: const Icon(Icons.edit_note), label: s.navPractice),
-          NavigationDestination(
-              icon: const Icon(Icons.insights_outlined), selectedIcon: const Icon(Icons.insights), label: s.navProgress),
-        ],
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _back();
+      },
+      child: Scaffold(
+        body: IndexedStack(
+          index: _tab.index,
+          children: [
+            for (final tab in MainTab.values)
+              Navigator(
+                key: _navigators[tab],
+                onGenerateRoute: (settings) =>
+                    MaterialPageRoute<void>(settings: settings, builder: (_) => _root(tab)),
+              ),
+          ],
+        ),
+        bottomNavigationBar: BrandNavBar(
+          selected: _tab.index,
+          onSelect: (i) => _goTo(MainTab.values[i]),
+          items: [
+            (icon: BrandAssets.navHome, label: s.navHome),
+            (icon: BrandAssets.navPapers, label: s.navPapers),
+            (icon: BrandAssets.navPractice, label: s.navPractice),
+            (icon: BrandAssets.navProgress, label: s.navProgress),
+          ],
+        ),
       ),
     );
   }

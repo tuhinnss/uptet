@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../app_state.dart';
 import '../l10n/strings.dart';
 import '../models/content.dart';
+import '../services/share_app.dart';
 import 'feedback.dart';
 
 /// App-bar button showing the current language; opens the settings sheet.
@@ -50,6 +51,14 @@ class _SettingsSheet extends StatelessWidget {
               ],
               selected: {app.language},
               onSelectionChanged: (selection) => app.setLanguage(selection.first),
+            ),
+            const SizedBox(height: 12),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.share_outlined),
+              title: Text(s.shareApp),
+              subtitle: Text(s.shareAppSubtitle),
+              onTap: () => shareApp(context),
             ),
             if (feedbackAvailable(app)) ...[
               const SizedBox(height: 20),

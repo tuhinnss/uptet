@@ -18,7 +18,8 @@ class _RevisionLists {
 class RevisionListScreen extends StatelessWidget {
   const RevisionListScreen({super.key});
 
-  static Future<void> open(BuildContext context) => Navigator.of(context).push(
+  static Future<void> open(BuildContext context) =>
+      Navigator.of(context, rootNavigator: true).push(
         MaterialPageRoute<void>(builder: (_) => const RevisionListScreen()),
       );
 

@@ -7,6 +7,8 @@ import '../l10n/strings.dart';
 import '../models/attempt.dart';
 import '../models/content.dart';
 import '../repositories/progress_repository.dart';
+import '../theme.dart';
+import '../widgets/brand.dart';
 import '../widgets/common.dart';
 import '../widgets/question_view.dart';
 import '../widgets/settings_sheet.dart';
@@ -23,7 +25,8 @@ class QuizScreen extends StatefulWidget {
 
   final int attemptId;
 
-  static Future<void> open(BuildContext context, int attemptId) => Navigator.of(context).push(
+  static Future<void> open(BuildContext context, int attemptId) =>
+      Navigator.of(context, rootNavigator: true).push(
         MaterialPageRoute<void>(builder: (_) => QuizScreen(attemptId: attemptId)),
       );
 
@@ -41,6 +44,7 @@ class _QuizScreenState extends State<QuizScreen> with WidgetsBindingObserver {
   bool _started = false;
   bool _failed = false;
   bool _submitting = false;
+  bool _showExplanation = false;
 
   // Kept for dispose, when the context can no longer be used.
   ProgressRepository? _progress;
@@ -180,7 +184,10 @@ class _QuizScreenState extends State<QuizScreen> with WidgetsBindingObserver {
   }
 
   void _goTo(int index) {
-    setState(() => _index = index);
+    setState(() {
+      _index = index;
+      _showExplanation = false;
+    });
     _saveIndex(index);
   }
 
@@ -329,6 +336,18 @@ class _QuizScreenState extends State<QuizScreen> with WidgetsBindingObserver {
     );
   }
 
+  /// Practice shows the answer as soon as one is chosen; a mock test keeps
+  /// answers hidden until it is submitted.
+  bool get _instantFeedback => _attempt?.mode == AttemptMode.practice;
+
+  void _toggleExplanation(Question question) {
+    if (question.explanation.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(S.of(context).noExplanation)));
+      return;
+    }
+    setState(() => _showExplanation = !_showExplanation);
+  }
+
   @override
   Widget build(BuildContext context) {
     final s = S.of(context);
@@ -342,62 +361,106 @@ class _QuizScreenState extends State<QuizScreen> with WidgetsBindingObserver {
 
     final question = _questions[_index];
     final isLast = _index == _questions.length - 1;
+    final selected = _selected[question.id];
+    final revealed = _instantFeedback && selected != null;
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
         if (!didPop) _confirmLeave();
       },
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(attemptTitle(context, attempt), maxLines: 1, overflow: TextOverflow.ellipsis),
-          actions: [
-            if (_remaining case final remaining?) _CountdownChip(remaining: remaining, label: s.timeLeft),
-            const LanguageButton(),
-            IconButton(tooltip: s.allQuestions, icon: const Icon(Icons.grid_view), onPressed: _showQuestionGrid),
+        body: Column(
+          children: [
+            const BrandHeader(showAbout: false),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
+              child: Row(
+                children: [
+                  IconButton(
+                    tooltip: s.leave,
+                    icon: const Icon(Icons.close, color: Colors.white),
+                    onPressed: _confirmLeave,
+                  ),
+                  Container(width: 5, height: 26, color: AppColors.sage),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(attemptTitle(context, attempt),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w700)),
+                  ),
+                  if (_remaining case final remaining?) _CountdownChip(remaining: remaining, label: s.timeLeft),
+                  const LanguageButton(),
+                  IconButton(
+                    tooltip: s.allQuestions,
+                    icon: const Icon(Icons.grid_view, color: Colors.white),
+                    onPressed: _showQuestionGrid,
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                children: [
+                  Text(s.questionXofY(_index + 1, _questions.length),
+                      style: const TextStyle(color: Colors.white70, fontSize: 13)),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: LinearProgressIndicator(
+                      value: _answeredCount / _questions.length,
+                      color: AppColors.mint,
+                      backgroundColor: Colors.white24,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                key: ValueKey(question.id),
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+                child: QuestionView(
+                  question: question,
+                  heading: 'Q${_index + 1}',
+                  inlineHeading: true,
+                  selectedOptionId: selected,
+                  correctOptionId: revealed ? question.correctOptionId : null,
+                  showExplanation: revealed && _showExplanation,
+                  onSelect: _submitting || revealed ? null : _select,
+                ),
+              ),
+            ),
           ],
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(4),
-            child: LinearProgressIndicator(value: _answeredCount / _questions.length),
-          ),
-        ),
-        body: SingleChildScrollView(
-          key: ValueKey(question.id),
-          padding: const EdgeInsets.all(16),
-          child: QuestionView(
-            question: question,
-            heading: s.questionXofY(_index + 1, _questions.length),
-            selectedOptionId: _selected[question.id],
-            onSelect: _submitting ? null : _select,
-          ),
         ),
         bottomNavigationBar: SafeArea(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
             child: Row(
               children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(48)),
-                    onPressed: _index == 0 ? null : () => _goTo(_index - 1),
+                if (_index > 0) ...[
+                  IconButton.filled(
+                    tooltip: s.previous,
+                    style: IconButton.styleFrom(backgroundColor: AppColors.mint, foregroundColor: AppColors.deepTeal),
+                    onPressed: () => _goTo(_index - 1),
                     icon: const Icon(Icons.chevron_left),
-                    label: Text(s.previous),
                   ),
-                ),
-                const SizedBox(width: 12),
+                  const SizedBox(width: 8),
+                ],
+                if (_instantFeedback) ...[
+                  Expanded(
+                    child: PillButton(
+                      label: s.explanation,
+                      onPressed: revealed ? () => _toggleExplanation(question) : null,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                ],
                 Expanded(
                   child: isLast
-                      ? FilledButton.icon(
-                          style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
-                          onPressed: _submitting ? null : _confirmSubmit,
-                          icon: const Icon(Icons.check),
-                          label: Text(s.submit),
-                        )
-                      : FilledButton.icon(
-                          style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
-                          onPressed: () => _goTo(_index + 1),
-                          icon: const Icon(Icons.chevron_right),
-                          label: Text(s.next),
-                        ),
+                      ? PillButton(label: s.submit, onPressed: _submitting ? null : _confirmSubmit)
+                      : PillButton(label: selected == null ? s.skip : s.nextArrows, onPressed: () => _goTo(_index + 1)),
                 ),
               ],
             ),

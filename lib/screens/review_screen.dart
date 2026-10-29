@@ -14,7 +14,8 @@ import '../widgets/question_view.dart';
 class ReviewScreen extends StatefulWidget {
   const ReviewScreen({super.key});
 
-  static Future<void> open(BuildContext context) => Navigator.of(context).push(
+  static Future<void> open(BuildContext context) =>
+      Navigator.of(context, rootNavigator: true).push(
         MaterialPageRoute<void>(builder: (_) => const ReviewScreen()),
       );
 

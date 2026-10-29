@@ -17,7 +17,7 @@ Future<void> startPaper(BuildContext context, Paper paper, {int? replacing}) asy
   final questions = app.content.questionsForPaper(paper.id);
   // Papers without a stated duration get a minute per question.
   final fullMinutes = paper.durationMinutes ?? questions.length;
-  final settings = await showTestSettingsSheet(context, fullMinutes: fullMinutes);
+  final settings = await showTestSettingsSheet(context, fullMinutes: fullMinutes, marking: paper.marking);
   if (settings == null || !context.mounted) return;
   if (replacing != null) await app.progress.discardInProgress(replacing);
   if (!context.mounted) return;

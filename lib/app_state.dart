@@ -14,6 +14,7 @@ class AppController extends ChangeNotifier {
     required SettingsRepository settings,
     required AppLanguage? language,
     this.contentWarning,
+    this.bundledPdfs = const {},
   })  : _settings = settings,
         _language = language;
 
@@ -25,6 +26,18 @@ class AppController extends ChangeNotifier {
 
   /// Set when a new content pack could not be installed and the previous one is in use.
   final String? contentWarning;
+
+  /// PDF assets shipped in the app.
+  final Set<String> bundledPdfs;
+
+  /// The paper's original booklet: the one the pack names, or else
+  /// `assets/pdfs/<paper id>.pdf` when that file is bundled.
+  String? pdfFor(Paper paper) {
+    final named = paper.pdfAsset;
+    if (named != null) return named;
+    final byId = 'assets/pdfs/${paper.id}.pdf';
+    return bundledPdfs.contains(byId) ? byId : null;
+  }
 
   AppLanguage? _language;
   int _dataRevision = 0;
