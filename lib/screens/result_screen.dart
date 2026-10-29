@@ -5,6 +5,7 @@ import '../l10n/strings.dart';
 import '../models/attempt.dart';
 import '../widgets/async_loader.dart';
 import '../widgets/common.dart';
+import '../widgets/feedback.dart';
 import '../widgets/question_view.dart';
 
 enum _Filter { all, incorrect, unanswered }
@@ -93,12 +94,18 @@ class _ResultScreenState extends State<ResultScreen> {
                 margin: const EdgeInsets.only(bottom: 12),
                 child: Padding(
                   padding: const EdgeInsets.all(16),
-                  child: QuestionView(
-                    question: question,
-                    heading: s.questionXofY(index + 1, attempt.totalQuestions),
-                    selectedOptionId: answer?.selectedOptionId,
-                    correctOptionId: answer?.correctOptionId ?? question.correctOptionId,
-                    showExplanation: true,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      QuestionView(
+                        question: question,
+                        heading: s.questionXofY(index + 1, attempt.totalQuestions),
+                        selectedOptionId: answer?.selectedOptionId,
+                        correctOptionId: answer?.correctOptionId ?? question.correctOptionId,
+                        showExplanation: true,
+                      ),
+                      ReportQuestionButton(questionId: question.id),
+                    ],
                   ),
                 ),
               );

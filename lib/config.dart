@@ -13,4 +13,15 @@ class AppConfig {
 
   /// Topics answered with accuracy below this percentage are flagged for practice.
   static const double weakTopicAccuracyThreshold = 60;
+
+  /// Google Form for pilot feedback (its "viewform" link). While empty, the
+  /// feedback buttons are hidden. Can also be set at build time:
+  /// `flutter build apk --dart-define=FEEDBACK_FORM_URL=https://docs.google.com/forms/d/e/.../viewform`
+  static const String feedbackFormUrl = String.fromEnvironment('FEEDBACK_FORM_URL');
+
+  /// IDs of the form's short-answer fields that are filled in for the
+  /// learner, from the form's "Get pre-filled link" (the number in `entry.123`).
+  /// Empty leaves that field for the learner to fill in.
+  static const String feedbackQuestionField = String.fromEnvironment('FEEDBACK_QUESTION_FIELD');
+  static const String feedbackContextField = String.fromEnvironment('FEEDBACK_CONTEXT_FIELD');
 }

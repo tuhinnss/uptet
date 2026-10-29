@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../app_state.dart';
 import '../l10n/strings.dart';
 import '../models/content.dart';
+import 'feedback.dart';
 
 /// App-bar button showing the current language; opens the settings sheet.
 class LanguageButton extends StatelessWidget {
@@ -50,6 +51,17 @@ class _SettingsSheet extends StatelessWidget {
               selected: {app.language},
               onSelectionChanged: (selection) => app.setLanguage(selection.first),
             ),
+            if (feedbackAvailable(app)) ...[
+              const SizedBox(height: 20),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.feedback_outlined),
+                title: Text(s.sendFeedback),
+                subtitle: Text(s.feedbackHint),
+                trailing: const Icon(Icons.open_in_new),
+                onTap: () => openFeedbackForm(context),
+              ),
+            ],
             const SizedBox(height: 28),
             Text(s.aboutDataTitle, style: theme.textTheme.titleMedium),
             const SizedBox(height: 8),

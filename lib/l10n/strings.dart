@@ -28,6 +28,13 @@ class S {
   String get language => _t('Language', 'भाषा');
   String languageName(AppLanguage l) => l == AppLanguage.hi ? 'हिन्दी' : 'English';
   String get contentVersionLabel => _t('Content version', 'सामग्री संस्करण');
+  String get sendFeedback => _t('Send feedback', 'सुझाव भेजें');
+  String get feedbackHint => _t('Tell us what is working and what to improve. Opens a short form in your browser.',
+      'बताइए क्या अच्छा है और क्या सुधारना है। आपके ब्राउज़र में एक छोटा फ़ॉर्म खुलेगा।');
+  String get reportProblem => _t('Report a problem with this question', 'इस प्रश्न में त्रुटि बताएँ');
+  String get feedbackOpenFailed =>
+      _t('The feedback form could not be opened. Please check your internet connection.',
+          'सुझाव फ़ॉर्म नहीं खुल सका। कृपया अपना इंटरनेट कनेक्शन जाँचें।');
 
   // First launch, shown before a language is chosen, so always bilingual.
   static const chooseLanguageTitle = 'अपनी भाषा चुनें\nChoose your language';
@@ -242,10 +249,12 @@ class S {
   String get aboutDataBody => _t(
       'Stored only on this phone: your language, your answers and scores, and your revision schedule. '
           'There is no account and UPTET Saathi has no server, so we never receive your data. '
-          'If you uninstall the app or lose this phone, your progress may not be recoverable.',
+          'If you uninstall the app or lose this phone, your progress may not be recoverable. '
+          'If you send feedback, only what you write in the form, and the ID of a question you report, reaches us.',
       'केवल इसी फ़ोन में सहेजा जाता है: आपकी भाषा, आपके उत्तर और अंक, और आपकी पुनरावृत्ति सूची। '
           'कोई खाता नहीं है और UPTET साथी का कोई सर्वर नहीं है, इसलिए आपका डेटा हमारे पास नहीं आता। '
-          'ऐप हटाने (अनइंस्टॉल) या फ़ोन खो जाने पर आपकी प्रगति शायद वापस न मिल सके।');
+          'ऐप हटाने (अनइंस्टॉल) या फ़ोन खो जाने पर आपकी प्रगति शायद वापस न मिल सके। '
+          'सुझाव भेजने पर केवल फ़ॉर्म में लिखी आपकी बात और बताए गए प्रश्न की ID ही हम तक पहुँचती है।');
 }
 
 /// `2` for whole numbers, `0.25` otherwise.

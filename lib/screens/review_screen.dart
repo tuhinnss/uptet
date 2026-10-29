@@ -6,6 +6,7 @@ import '../models/revision.dart';
 import '../repositories/progress_repository.dart';
 import '../services/revision_scheduler.dart';
 import '../widgets/common.dart';
+import '../widgets/feedback.dart';
 import '../widgets/question_view.dart';
 
 /// Works through the questions due for revision, one at a time. Each answer
@@ -127,6 +128,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
             if (outcome != null) ...[
               const SizedBox(height: 12),
               _Feedback(outcome: outcome),
+              ReportQuestionButton(questionId: question.id),
             ],
           ],
         ),
