@@ -138,6 +138,26 @@ const List<List<String>> migrations = [
     'ALTER TABLE attempts ADD COLUMN time_limit_seconds INTEGER',
     'ALTER TABLE attempts ADD COLUMN elapsed_seconds INTEGER NOT NULL DEFAULT 0',
   ],
+  // v5: study activity per local day, for the heat map, streaks and weekly
+  // time. Kept separately so it survives discarded attempts; backfilled from
+  // the answers, reviews and test clocks already recorded.
+  [
+    '''CREATE TABLE study_days (
+      day TEXT PRIMARY KEY,
+      questions INTEGER NOT NULL DEFAULT 0,
+      seconds INTEGER NOT NULL DEFAULT 0
+    )''',
+    '''INSERT INTO study_days (day, questions, seconds)
+      SELECT day, SUM(questions), SUM(seconds) FROM (
+        SELECT date(answered_at / 1000, 'unixepoch', 'localtime') AS day, COUNT(*) AS questions, 0 AS seconds
+          FROM user_answers WHERE answered_at IS NOT NULL GROUP BY 1
+        UNION ALL
+        SELECT date(reviewed_at / 1000, 'unixepoch', 'localtime'), COUNT(*), 0 FROM review_log GROUP BY 1
+        UNION ALL
+        SELECT date(updated_at / 1000, 'unixepoch', 'localtime'), 0, SUM(elapsed_seconds)
+          FROM attempts WHERE elapsed_seconds > 0 GROUP BY 1
+      ) GROUP BY day''',
+  ],
 ];
 
 int get schemaVersion => migrations.length;

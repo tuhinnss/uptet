@@ -14,6 +14,13 @@ class AppConfig {
   /// Topics answered with accuracy below this percentage are flagged for practice.
   static const double weakTopicAccuracyThreshold = 60;
 
+  /// A day without answered questions still counts towards the streak after
+  /// this much study time, for example reading explanations.
+  static const int activeDayMinSeconds = 60;
+
+  /// Questions answered in a day needed for each darker heat map shade.
+  static const List<int> heatMapQuestionLevels = [10, 25, 50, 100];
+
   /// Google Form for pilot feedback (its "viewform" link). While empty, the
   /// feedback buttons are hidden. Can also be set at build time:
   /// `flutter build apk --dart-define=FEEDBACK_FORM_URL=https://docs.google.com/forms/d/e/.../viewform`

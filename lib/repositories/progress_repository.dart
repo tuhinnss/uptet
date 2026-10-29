@@ -9,6 +9,7 @@ import '../models/revision.dart';
 import '../services/progress_calculator.dart';
 import '../services/revision_scheduler.dart';
 import '../services/scoring.dart';
+import '../services/study_activity.dart';
 
 class RevisionOverview {
   const RevisionOverview({
@@ -37,6 +38,9 @@ class ProgressReport {
     required this.revision,
     required this.topics,
     required this.attempts,
+    required this.papersCompleted,
+    required this.distinctQuestionsAttempted,
+    required this.studyDays,
   });
 
   final int testsCompleted;
@@ -48,6 +52,15 @@ class ProgressReport {
 
   /// Submitted attempts, newest first.
   final List<Attempt> attempts;
+
+  /// Different papers submitted at least once.
+  final int papersCompleted;
+
+  /// Different questions answered in submitted attempts.
+  final int distinctQuestionsAttempted;
+
+  /// Days with any study activity, oldest first.
+  final List<StudyDay> studyDays;
 
   int get attempted => correct + incorrect;
   double? get accuracyPercent => accuracyPercentOf(correct, attempted);
@@ -112,6 +125,8 @@ class ProgressRepository {
     final now = _clock().millisecondsSinceEpoch;
     await _db.transaction((txn) async {
       await _requireInProgress(txn, attemptId);
+      final previous = await txn.query('user_answers',
+          columns: ['selected_option_id'], where: 'attempt_id = ? AND question_id = ?', whereArgs: [attemptId, questionId]);
       final updated = await txn.update(
         'user_answers',
         {'selected_option_id': optionId, 'answered_at': optionId == null ? null : now},
@@ -119,6 +134,10 @@ class ProgressRepository {
         whereArgs: [attemptId, questionId],
       );
       if (updated != 1) throw StateError('Question $questionId is not part of attempt $attemptId');
+      // Changing an answer is not another question studied.
+      if (optionId != null && previous.single['selected_option_id'] == null) {
+        await _addStudy(txn, questions: 1);
+      }
       await txn.update('attempts', {'updated_at': now}, where: 'attempt_id = ?', whereArgs: [attemptId]);
     });
   }
@@ -131,12 +150,18 @@ class ProgressRepository {
       );
 
   /// Records the time spent so far; only an unfinished attempt's clock moves.
-  Future<void> saveElapsed(int attemptId, Duration elapsed) => _db.update(
-        'attempts',
-        {'elapsed_seconds': elapsed.inSeconds},
-        where: 'attempt_id = ? AND status = ?',
-        whereArgs: [attemptId, AttemptStatus.inProgress.code],
-      );
+  /// The time added since the last save counts as today's study time.
+  Future<void> saveElapsed(int attemptId, Duration elapsed) => _db.transaction((txn) async {
+        final rows = await txn.query('attempts',
+            columns: ['elapsed_seconds'],
+            where: 'attempt_id = ? AND status = ?',
+            whereArgs: [attemptId, AttemptStatus.inProgress.code]);
+        if (rows.isEmpty) return;
+        await txn.update('attempts', {'elapsed_seconds': elapsed.inSeconds},
+            where: 'attempt_id = ?', whereArgs: [attemptId]);
+        final added = elapsed.inSeconds - (rows.single['elapsed_seconds'] as int);
+        if (added > 0) await _addStudy(txn, seconds: added);
+      });
 
   /// Deletes an unfinished attempt. Submitted attempts are never deleted.
   Future<void> discardInProgress(int attemptId) => _db.delete(
@@ -351,6 +376,7 @@ class ProgressRepository {
         'stage_before': item.state.stage,
         'stage_after': next.stage,
       });
+      await _addStudy(txn, questions: 1);
       return ReviewOutcome(isCorrect: isCorrect, state: next);
     });
   }
@@ -379,6 +405,25 @@ class ProgressRepository {
         ),
       );
 
+  // ---- Study activity -----------------------------------------------------
+
+  /// Adds to today's totals. No UPSERT: older Android SQLite lacks it.
+  Future<void> _addStudy(DatabaseExecutor db, {int questions = 0, int seconds = 0}) async {
+    final day = dayKey(_clock());
+    final updated = await db.rawUpdate(
+        'UPDATE study_days SET questions = questions + ?, seconds = seconds + ? WHERE day = ?', [questions, seconds, day]);
+    if (updated == 0) await db.insert('study_days', {'day': day, 'questions': questions, 'seconds': seconds});
+  }
+
+  /// Every recorded day, oldest first.
+  Future<List<StudyDay>> studyDays() async {
+    final rows = await _db.query('study_days', orderBy: 'day');
+    return [
+      for (final r in rows)
+        StudyDay(day: parseDayKey(r['day'] as String), questions: r['questions'] as int, seconds: r['seconds'] as int),
+    ];
+  }
+
   // ---- Progress -----------------------------------------------------------
 
   Future<ProgressReport> progressReport() async {
@@ -394,6 +439,12 @@ class ProgressRepository {
       JOIN attempts a ON a.attempt_id = ua.attempt_id
       JOIN questions q ON q.question_id = ua.question_id
       WHERE a.status = ? AND ua.selected_option_id IS NOT NULL''', [AttemptStatus.submitted.code]);
+    final distinct = (await _db.rawQuery('''
+      SELECT (SELECT COUNT(DISTINCT paper_id) FROM attempts WHERE status = ? AND kind = 'paper') AS papers,
+             (SELECT COUNT(DISTINCT ua.question_id) FROM user_answers ua
+                JOIN attempts a ON a.attempt_id = ua.attempt_id
+                WHERE a.status = ? AND ua.selected_option_id IS NOT NULL) AS questions''',
+        [AttemptStatus.submitted.code, AttemptStatus.submitted.code])).first;
     return ProgressReport(
       testsCompleted: totals['tests'] as int,
       correct: totals['correct'] as int,
@@ -404,6 +455,9 @@ class ProgressRepository {
         for (final r in topicRows) (topicId: r['topic_id'] as String, isCorrect: r['is_correct'] == 1),
       ]),
       attempts: await submittedAttempts(),
+      papersCompleted: distinct['papers'] as int,
+      distinctQuestionsAttempted: distinct['questions'] as int,
+      studyDays: await studyDays(),
     );
   }
 }

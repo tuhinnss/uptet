@@ -274,4 +274,36 @@ void main() {
     expect(attempt.isTimed, isFalse);
     expect(attempt.elapsed, Duration.zero);
   });
+
+  test('study activity counts first answers, reviews and time per day', () async {
+    final id = await startPaper();
+    await progress.saveAnswer(id, 'q1', 'A');
+    await progress.saveAnswer(id, 'q1', 'B'); // a changed answer is not another question
+    await progress.saveAnswer(id, 'q2', 'B');
+    await progress.saveElapsed(id, const Duration(minutes: 5));
+    await progress.saveElapsed(id, const Duration(minutes: 8));
+
+    await progress.submitAttempt(id, content);
+    now = DateTime(2026, 10, 27, 9);
+    final due = await progress.dueRevisionItems();
+    await progress.recordReview(due.first.id, 'A', content);
+
+    final days = await progress.studyDays();
+    expect(days.map((d) => (d.day, d.questions, d.seconds)), [
+      (DateTime(2026, 10, 26), 2, 480),
+      (DateTime(2026, 10, 27), 1, 0),
+    ]);
+
+    final report = await progress.progressReport();
+    expect(report.papersCompleted, 1);
+    expect(report.distinctQuestionsAttempted, 2);
+    expect(report.studyDays, hasLength(2));
+  });
+
+  test('study activity survives a discarded attempt', () async {
+    final id = await startPaper();
+    await progress.saveAnswer(id, 'q1', 'A');
+    await progress.discardInProgress(id);
+    expect((await progress.studyDays()).single.questions, 1);
+  });
 }

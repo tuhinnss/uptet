@@ -59,6 +59,7 @@ void main() {
     expect(await db.query('settings'), [
       {'key': 'language', 'value': 'hi'},
     ]);
+    expect(await db.query('study_days'), isEmpty);
     final papers = await db.query('papers');
     expect(papers.single['paper_id'], 'p1');
     expect(papers.single['distribution_cleared'], 0);
